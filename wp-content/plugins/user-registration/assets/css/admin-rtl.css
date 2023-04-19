@@ -840,6 +840,9 @@
 .ur-icon-total::before {
   content: ""; }
 
+.ur-icon-quantity::before {
+  content: ""; }
+
 .user-registration-table {
   width: 100%;
   background: #ffffff;
@@ -1379,13 +1382,17 @@
   .user-registration-page.user-registration-modal-open .user-registration-modal {
     max-width: 100%; }
 
+.user-registration-modal-link:hover {
+  cursor: pointer; }
+
 .user-registration-modal {
   display: flex;
+  place-content: center;
   position: fixed;
-  top: 0;
+  top: 50px;
   right: 0;
   left: 0;
-  height: 100%;
+  max-height: 90%;
   width: 100%;
   margin: 0 auto !important;
   overflow-x: hidden;
@@ -1452,7 +1459,7 @@
   .user-registration-modal .user-registration-modal__body {
     position: relative;
     padding: 16px;
-    max-height: 75vh;
+    max-height: 67vh;
     overflow-y: scroll; }
     .user-registration-modal .user-registration-modal__body #user-registration,
     .user-registration-modal .user-registration-modal__body .user-registration,
@@ -5215,8 +5222,8 @@
     transform: scale(0.9); } }
 
 /**
-  * Styling begins
-  */
+ * Styling begins
+ */
 .blockUI.blockOverlay::before {
   width: 16px;
   height: 16px;
@@ -5257,8 +5264,8 @@
     background-size: cover; }
 
 /**
-	* Toggle class.
-	*/
+   * Toggle class.
+   */
 .userregistration-forms-hidden {
   display: block; }
 
@@ -5288,6 +5295,9 @@
 
 .ur-label .user-registration-help-tip {
   margin-right: 2px; }
+
+.ur-label label span:not(.ur-portal-tooltip) {
+  margin-right: 3px; }
 
 .jconfirm-cell {
   padding-right: 30%;
@@ -5321,8 +5331,8 @@
         text-align: center; }
 
 /**
-  * Addons page
-  **/
+ * Addons page
+ **/
 .ur_addons_wrap p.refresh {
   margin: 0 0 2em; }
 
@@ -5371,6 +5381,13 @@
           border-radius: 2px;
           background-color: #475BB2;
           color: #fff; }
+        .ur_addons_wrap .plugin-card .plugin-card-right .plugin-card-buttons .action-buttons .upgrade-now {
+          background: #475bb2 !important;
+          color: #fff;
+          font-weight: 500; }
+        .ur_addons_wrap .plugin-card .plugin-card-right .plugin-card-buttons .action-buttons .upgrade-now:hover {
+          background: #516be0 !important;
+          color: #fff; }
         .ur_addons_wrap .plugin-card .plugin-card-right .plugin-card-buttons .action-buttons.upgrade-plan {
           margin: 0 auto; }
 
@@ -5396,8 +5413,8 @@
   margin-top: 10px; }
 
 /**
-  * Form Builder Styles
-  **/
+ * Form Builder Styles
+ **/
 .user-registration_page_add-new-registration #wpfooter {
   display: none; }
 
@@ -5489,8 +5506,8 @@
       vertical-align: middle; }
 
 /**
- * Backbone modal dialog
- */
+* Backbone modal dialog
+*/
 .ur-backbone-modal * {
   box-sizing: border-box; }
 
@@ -6362,8 +6379,8 @@
       flex: 1 0 27%; }
 
 /**
-  * Tooltips
-  */
+ * Tooltips
+ */
 .tips {
   cursor: help;
   text-decoration: none; }
@@ -6371,65 +6388,6 @@
 img.tips {
   padding: 5px 0 0; }
 
-#tiptip_holder {
-  display: none;
-  z-index: 8675309;
-  position: absolute;
-  top: 0;
-  left: 0; }
-  #tiptip_holder.tip_top {
-    padding-bottom: 5px; }
-    #tiptip_holder.tip_top #tiptip_arrow_inner {
-      margin-top: -7px;
-      margin-right: -6px;
-      border-top-color: #dee0e9; }
-  #tiptip_holder.tip_bottom {
-    padding-top: 5px; }
-    #tiptip_holder.tip_bottom #tiptip_arrow_inner {
-      margin-top: -5px;
-      margin-right: -6px;
-      border-bottom-color: #4c5477; }
-  #tiptip_holder.tip_right {
-    padding-right: 5px; }
-    #tiptip_holder.tip_right #tiptip_arrow_inner {
-      margin-top: -6px;
-      margin-right: -5px;
-      border-left-color: #dee0e9; }
-  #tiptip_holder.tip_left {
-    padding-left: 5px; }
-    #tiptip_holder.tip_left #tiptip_arrow_inner {
-      margin-top: -6px;
-      margin-right: -7px;
-      border-right-color: #dee0e9; }
-
-#tiptip_content,
-.ur_error_tip {
-  color: #ffffff;
-  font-size: 0.9em;
-  max-width: 150px;
-  background: #4c5477;
-  text-align: center;
-  border-radius: 3px;
-  padding: 0.618em 1em;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); }
-  #tiptip_content code,
-  .ur_error_tip code {
-    padding: 1px;
-    background: #888; }
-
-#tiptip_arrow,
-#tiptip_arrow_inner {
-  position: absolute;
-  border-color: transparent;
-  border-style: solid;
-  border-width: 6px;
-  height: 0;
-  width: 0; }
-
-#tiptip_arrow {
-	 right: 50%;
-	 margin-right: -6px;
- }
 .ur_error_tip {
   max-width: 20em;
   line-height: 1.8em;
@@ -6450,9 +6408,23 @@ img.tips {
     right: 50%;
     margin: -1em -3px 0 0; }
 
+.tooltipster-base .tooltipster-box {
+  background-color: #4c5477 !important;
+  padding: 4px 8px;
+  border-radius: 2px;
+  text-align: center; }
+  .tooltipster-base .tooltipster-box .tooltipster-content {
+    padding: 2px 0; }
+  .tooltipster-base .tooltipster-box .tooltipster-content a {
+    color: #9EF01A !important; }
+
+.tooltipster-base .tooltipster-arrow .tooltipster-arrow-uncropped .tooltipster-arrow-border {
+  border-bottom-color: #4c5477 !important;
+  border-top-color: #4c5477 !important; }
+
 /**
-  * Help Tip
-  */
+ * Help Tip
+ */
 .user-registration-help-tip,
 .ur-portal-tooltip {
   color: #676d8a;
@@ -6503,12 +6475,12 @@ img.tips {
   background-color: #ffffff; }
 
 /**
-  * Fullscreen Mode
-  **/
+ * Fullscreen Mode
+ **/
 body {
   /**
-  * User Registration Builder Loading
-  **/ }
+	 * User Registration Builder Loading
+	 **/ }
   body.ur-full-screen-mode {
     margin-top: -32px; }
     body.ur-full-screen-mode #wpbody-content {
@@ -6717,3 +6689,317 @@ body {
       background-color: white;
       transition: .4s;
       border-radius: 100%; }
+
+.user-registration-setup {
+  font-size: 14px;
+  max-width: calc(100% - 32px);
+  margin: 20px auto;
+  background: white; }
+  @media (min-width: 960px) {
+    .user-registration-setup {
+      max-width: 835px; } }
+  @media (min-width: 1280px) {
+    .user-registration-setup {
+      max-width: 1100px; } }
+  .user-registration-setup .ur-brand-logo {
+    border-left: 1px solid #dee0e9; }
+    .user-registration-setup .ur-brand-logo img {
+      width: 32px;
+      height: 32px;
+      margin-left: 8px;
+      display: flex; }
+  .user-registration-setup a:focus {
+    box-shadow: none; }
+  .user-registration-setup .page-title-action, .user-registration-setup .page-title-action:active {
+    top: 0;
+    margin-right: 16px; }
+  .user-registration-setup .user-registration-setup-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 0 16px;
+    background-color: white;
+    border-bottom: 1px solid #cdd0d8; }
+    @media only screen and (max-width: 768px) {
+      .user-registration-setup .user-registration-setup-header {
+        padding-top: 16px; } }
+    .user-registration-setup .user-registration-setup-header .user-registration-logo {
+      display: flex;
+      flex-wrap: wrap;
+      padding-left: 1em;
+      border-left: 1px solid #cdd0d8;
+      margin-left: 1em; }
+    .user-registration-setup .user-registration-setup-header h4 {
+      margin-right: 15px; }
+    .user-registration-setup .user-registration-setup-header .user-registration-tab {
+      margin-right: auto; }
+      @media only screen and (max-width: 768px) {
+        .user-registration-setup .user-registration-setup-header .user-registration-tab {
+          width: calc(100% + 32px);
+          flex: 0 0 calc(100% + 32px);
+          margin-top: 16px;
+          margin-left: -16px;
+          margin-right: -16px;
+          border-top: 1px solid #cdd0d8; } }
+      .user-registration-setup .user-registration-setup-header .user-registration-tab ul {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0; }
+        .user-registration-setup .user-registration-setup-header .user-registration-tab ul .user-registration-tab-nav {
+          display: inline-flex;
+          margin: 0 0 0 8px; }
+          .user-registration-setup .user-registration-setup-header .user-registration-tab ul .user-registration-tab-nav.active .user-registration-tab-nav-link {
+            color: #7e3bd0;
+            border-color: #7e3bd0; }
+          .user-registration-setup .user-registration-setup-header .user-registration-tab ul .user-registration-tab-nav .user-registration-tab-nav-link {
+            font-weight: 600;
+            padding: 16px 8px;
+            color: #494d50;
+            text-decoration: none;
+            border-bottom: 2px solid transparent; }
+  .user-registration-setup .ur-setup-templates {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 8px; }
+    .user-registration-setup .ur-setup-templates .ur-loading {
+      margin: 80px auto; }
+    .user-registration-setup .ur-setup-templates .ur-template {
+      width: 100%;
+      background: white;
+      border-radius: 4px;
+      position: relative;
+      margin: 12px; }
+      @media (min-width: 400px) {
+        .user-registration-setup .ur-setup-templates .ur-template {
+          width: calc(50% - 24px);
+          flex: 0 0 calc(50% - 24px); } }
+      @media only screen and (min-width: 768px) {
+        .user-registration-setup .ur-setup-templates .ur-template {
+          width: calc(33.333% - 24px);
+          flex: 0 0 calc(33.333% - 24px); } }
+      @media (min-width: 960px) {
+        .user-registration-setup .ur-setup-templates .ur-template {
+          width: calc(25% - 24px);
+          flex: 0 0 calc(25% - 24px); } }
+      .user-registration-setup .ur-setup-templates .ur-template .user-registration-screenshot {
+        cursor: pointer;
+        padding: 8px;
+        margin: 0;
+        min-height: auto;
+        position: relative;
+        border-radius: 4px;
+        background: #e9ebf1; }
+        @media only screen and (min-width: 1280px) {
+          .user-registration-setup .ur-setup-templates .ur-template .user-registration-screenshot {
+            min-height: 280px; } }
+        .user-registration-setup .ur-setup-templates .ur-template .user-registration-screenshot .user-registration-badge {
+          position: absolute;
+          bottom: 16px;
+          left: 16px;
+          z-index: 1; }
+        .user-registration-setup .ur-setup-templates .ur-template .user-registration-screenshot .form-action {
+          display: none;
+          position: absolute;
+          right: 0;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 1; }
+          .user-registration-setup .ur-setup-templates .ur-template .user-registration-screenshot .form-action .user-registration-btn:last-child {
+            margin-right: 8px; }
+      .user-registration-setup .ur-setup-templates .ur-template img {
+        display: block;
+        width: 100%; }
+      .user-registration-setup .ur-setup-templates .ur-template .user-registration-form-id-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        position: relative; }
+        .user-registration-setup .ur-setup-templates .ur-template .user-registration-form-id-container .user-registration-template-name {
+          font-size: 16px;
+          font-weight: 600;
+          margin: 16px 0;
+          color: #2d3559;
+          text-decoration: none; }
+          .user-registration-setup .ur-setup-templates .ur-template .user-registration-form-id-container .user-registration-template-name:hover {
+            color: #475bb2; }
+      .user-registration-setup .ur-setup-templates .ur-template:hover .user-registration-screenshot::after {
+        content: '';
+        display: block;
+        background: rgba(45, 53, 89, 0.5);
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0; }
+      .user-registration-setup .ur-setup-templates .ur-template:hover .form-action {
+        display: flex;
+        align-items: center;
+        justify-content: center; }
+      .user-registration-setup .ur-setup-templates .ur-template:nth-child(even) {
+        float: left; }
+      .user-registration-setup .ur-setup-templates .ur-template .ur-template-overlay {
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.5);
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        opacity: 0;
+        visibility: hidden;
+        transition: 0.5s background-color ease-in-out;
+        color: white;
+        text-align: center;
+        padding: 40% 0; }
+        .user-registration-setup .ur-setup-templates .ur-template .ur-template-overlay .ur-template-select {
+          text-decoration: none; }
+        .user-registration-setup .ur-setup-templates .ur-template .ur-template-overlay.loading .ur-button,
+        .user-registration-setup .ur-setup-templates .ur-template .ur-template-overlay.loading .ur-button::before,
+        .user-registration-setup .ur-setup-templates .ur-template .ur-template-overlay.loading .ur-button::after {
+          background: white;
+          -webkit-animation: load1 1s infinite ease-in-out;
+          animation: load1 1s infinite ease-in-out;
+          width: 1em;
+          height: 4em;
+          padding: 0;
+          border-radius: 0; }
+        .user-registration-setup .ur-setup-templates .ur-template .ur-template-overlay.loading .ur-button {
+          color: white;
+          text-indent: -9999em;
+          margin: 0 auto;
+          position: relative;
+          font-size: 11px;
+          -webkit-transform: translateZ(0);
+          -ms-transform: translateZ(0);
+          transform: translateZ(0);
+          -webkit-animation-delay: -0.16s;
+          animation-delay: -0.16s; }
+        .user-registration-setup .ur-setup-templates .ur-template .ur-template-overlay.loading .ur-button::before,
+        .user-registration-setup .ur-setup-templates .ur-template .ur-template-overlay.loading .ur-button::after {
+          position: absolute;
+          top: 0;
+          content: ''; }
+        .user-registration-setup .ur-setup-templates .ur-template .ur-template-overlay.loading .ur-button::before {
+          right: -1.5em;
+          -webkit-animation-delay: -0.32s;
+          animation-delay: -0.32s; }
+        .user-registration-setup .ur-setup-templates .ur-template .ur-template-overlay.loading .ur-button::after {
+          right: 1.5em; }
+
+@-webkit-keyframes load1 {
+  0%,
+  80%,
+  100% {
+    box-shadow: 0 0;
+    height: 4em; }
+  40% {
+    box-shadow: 0 -2em;
+    height: 5em; } }
+
+@keyframes load1 {
+  0%,
+  80%,
+  100% {
+    box-shadow: 0 0;
+    height: 4em; }
+  40% {
+    box-shadow: 0 -2em;
+    height: 5em; } }
+      .user-registration-setup .ur-setup-templates .ur-template:hover .ur-template-overlay,
+      .user-registration-setup .ur-setup-templates .ur-template .ur-template-overlay.loading {
+        opacity: 1;
+        visibility: visible; }
+      .user-registration-setup .ur-setup-templates .ur-template .ur-button {
+        display: inline-block;
+        padding: 15px 22px;
+        background-color: white;
+        color: #000;
+        font-size: 12px;
+        text-transform: uppercase;
+        border: none;
+        border-radius: 100px; }
+
+.user-registration-form-template-wrapper .user-registration-form-template[data-filter-template="free"] .user-registration-template-wrap[data-plan="premium"] {
+  display: none; }
+
+.user-registration-form-template-wrapper .user-registration-form-template[data-filter-template="premium"] .user-registration-template-wrap[data-plan="free"] {
+  display: none; }
+
+.user-registration .swal2-container h3 {
+  font-size: 16px;
+  font-weight: 400; }
+
+.user-registration .swal2-container .swal2-popup {
+  width: 400px;
+  border-top: 6px solid #ff4f55;
+  border-radius: 10px; }
+
+.user-registration .swal2-container .user-registration-recommend-addons {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e9ebf1; }
+  .user-registration .swal2-container .user-registration-recommend-addons .bulk-action-notice {
+    margin: 0 0 20px; }
+    .user-registration .swal2-container .user-registration-recommend-addons .bulk-action-notice p {
+      padding: 0;
+      margin: 8px 0 !important; }
+    .user-registration .swal2-container .user-registration-recommend-addons .bulk-action-notice.notice-error .button-link {
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      margin-top: 8px; }
+      .user-registration .swal2-container .user-registration-recommend-addons .bulk-action-notice.notice-error .button-link .toggle-indicator {
+        display: inline-flex; }
+    .user-registration .swal2-container .user-registration-recommend-addons .bulk-action-notice.notice-error .bulk-action-errors {
+      margin-top: 0; }
+  .user-registration .swal2-container .user-registration-recommend-addons .plugins-list-table {
+    border-radius: 4px; }
+    .user-registration .swal2-container .user-registration-recommend-addons .plugins-list-table .plugin-name {
+      text-align: right; }
+    .user-registration .swal2-container .user-registration-recommend-addons .plugins-list-table .plugin-status {
+      float: left; }
+      .user-registration .swal2-container .user-registration-recommend-addons .plugins-list-table .plugin-status span {
+        width: 15px;
+        height: 15px;
+        overflow: hidden;
+        border-radius: 50%;
+        position: relative;
+        vertical-align: top;
+        white-space: nowrap;
+        text-indent: -9999px;
+        display: inline-block;
+        border: 2px solid #cdd0d8; }
+        .user-registration .swal2-container .user-registration-recommend-addons .plugins-list-table .plugin-status span.active::after, .user-registration .swal2-container .user-registration-recommend-addons .plugins-list-table .plugin-status span.activate-now::after {
+          position: absolute;
+          right: 50%;
+          top: 50%;
+          opacity: 1;
+          width: 34%;
+          height: 50%;
+          content: '';
+          transform-origin: right top;
+          border-top: 2px solid #cdd0d8;
+          border-left: 2px solid #cdd0d8;
+          transform: scaleX(-1) rotate(-135deg) translate(58%, -40%); }
+        .user-registration .swal2-container .user-registration-recommend-addons .plugins-list-table .plugin-status span.activate-now {
+          border-color: #cdd0d8; }
+          .user-registration .swal2-container .user-registration-recommend-addons .plugins-list-table .plugin-status span.activate-now.updating-message {
+            border-color: #cdd0d8;
+            border-right-color: #37b24d; }
+        .user-registration .swal2-container .user-registration-recommend-addons .plugins-list-table .plugin-status span.active {
+          border-color: #37b24d; }
+          .user-registration .swal2-container .user-registration-recommend-addons .plugins-list-table .plugin-status span.active::after {
+            border-top: 2px solid #37b24d;
+            border-left: 2px solid #37b24d; }
+        .user-registration .swal2-container .user-registration-recommend-addons .plugins-list-table .plugin-status span.updating-message {
+          border-right-color: #37b24d;
+          animation: spin 0.75s linear infinite; }
+          .user-registration .swal2-container .user-registration-recommend-addons .plugins-list-table .plugin-status span.updating-message::after {
+            content: none; }
+
+.user-registration .swal2-container .user-registration-template-install-addon,
+.user-registration .swal2-container .user-registration-template-continue {
+  margin-top: 20px;
+  color: #ffffff;
+  text-decoration: none; }

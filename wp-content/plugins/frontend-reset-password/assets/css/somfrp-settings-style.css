@@ -67,7 +67,7 @@
 	margin: 0;
 	padding: 5px 15px;
 	padding-left: 35px;
-	background-color: #333;
+	background-color: #1a0552;
 	overflow: hidden;
 	position: absolute;
 	left: -20px;
@@ -139,7 +139,7 @@
 	}
 }
 
-.som-settings-nav .dashicons::before, {
+.som-settings-nav .dashicons::before {
 	line-height: 50px;
 }
 
@@ -148,7 +148,7 @@
 	left: 160px;
 	right: 0;
 	bottom: 0;
-	background-color: #333;
+	background-color: #1a0552;
 	box-sizing: border-box;
 	text-align: center;
 	color: #fff;
@@ -198,11 +198,12 @@
 
 .som-settings-container.som-settings-message-footer {
 	padding-top: 20px;
-	padding-bottom: 15px;
+	padding-bottom: 30px;
 }
 
 .som-settings-container.som-settings-message-footer p {
 	font-size: 14px;
+
 }
 
 /* SOM Settings Pages

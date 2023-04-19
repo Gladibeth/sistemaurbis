@@ -58,16 +58,14 @@ if ( ! defined( 'WPINC' ) ) {
 					<?php esc_html_e( 'Images Smushed', 'wp-smushit' ); ?>
 				</span>
 			</span>
-			<?php if ( $resize_count > 0 ) : ?>
-				<span class="wp-smush-count-resize-total">
-					<span class="sui-summary-detail wp-smush-total-optimised">
-						<?php echo esc_html( $resize_count ); ?>
-					</span>
-					<span class="sui-summary-sub">
-						<?php esc_html_e( 'Images Resized', 'wp-smushit' ); ?>
-					</span>
+			<span class="wp-smush-count-resize-total <?php echo $resize_count > 0 ? '' : 'sui-hidden'; ?>">
+				<span class="sui-summary-detail wp-smush-total-optimised">
+					<?php echo esc_html( $resize_count ); ?>
 				</span>
-			<?php endif; ?>
+				<span class="sui-summary-sub">
+					<?php esc_html_e( 'Images Resized', 'wp-smushit' ); ?>
+				</span>
+			</span>
 		</span>
 	</div>
 </div>
@@ -82,7 +80,7 @@ if ( ! defined( 'WPINC' ) ) {
 					<a href="<?php echo esc_url( $upsell_url_cdn ); ?>" target="_blank" class="smush-upgrade-text">
 						<?php esc_html_e( 'Upgrade', 'wp-smushit' ); ?>
 					</a>
-					<span class="sui-tooltip sui-tooltip-constrained sui-tooltip-top-right" style="--tooltip-width: 360px;" data-tooltip="<?php esc_attr_e( 'Multiply the speed and savings! Serve your images from our CDN from 45 blazing fast servers around the world.', 'wp-smushit' ); ?>">
+					<span class="sui-tooltip sui-tooltip-constrained sui-tooltip-top-right" style="--tooltip-width: 360px;" data-tooltip="<?php esc_attr_e( 'Multiply the speed and savings! Serve your images from our CDN from 114 blazing fast servers around the world.', 'wp-smushit' ); ?>">
 						<span class="sui-tag sui-tag-sm sui-tag-purple"><?php esc_html_e( 'Pro', 'wp-smushit' ); ?></span>
 					</span>
 				<?php elseif ( $is_cdn ) : ?>

@@ -97,7 +97,7 @@
   "enable_page_title_param":"checkbox",
   "enable_post_type_param": "checkbox",
   "enable_post_category_param": "checkbox",
-  "сompress_front_js":  "checkbox",
+  "compress_front_js":  "checkbox",
 
 
   "enable_woo_category_name_param": "checkbox",
@@ -123,5 +123,8 @@
 
   "automatic_event_download_extensions": "tag_select",
   "automatic_event_scroll_value": "number",
-  "automatic_event_time_on_page_value": "number"
+  "automatic_event_time_on_page_value": "number",
+
+  "enable_success_send_form": "checkbox",
+  "hide_version_plugin_in_console": "checkbox"
 }

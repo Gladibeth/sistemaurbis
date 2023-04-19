@@ -215,6 +215,7 @@ function pp_capabilities_is_classic_editor_available()
         || version_compare($wp_version, '5.0', '<')
         || class_exists('WooCommerce')
         || (defined('PP_CAPABILITIES_CONFIGURE_CLASSIC_EDITOR') && PP_CAPABILITIES_CONFIGURE_CLASSIC_EDITOR)
+        || !empty(get_option('cme_editor_features_classic_editor_tab'))
         || (function_exists('et_get_option') && 'on' === et_get_option('et_enable_classic_editor', 'off'));
 }
 
@@ -248,10 +249,23 @@ add_action('admin_bar_menu', 'ppc_features_get_admin_bar_nodes', 999);
  *
  */
 function ppc_admin_feature_restrictions() {
-    require_once ( dirname(CME_FILE) . '/includes/features/restrict-admin-features.php' );    
+    require_once ( PUBLISHPRESS_CAPS_ABSPATH . '/includes/features/restrict-admin-features.php' );    
     PP_Capabilities_Admin_Features::adminFeaturedRestriction();
 }
 add_action('init', 'ppc_admin_feature_restrictions', 999);
+
+
+/**
+ * Implement test user feature
+ *
+ * @return void
+ */
+function ppc_test_user_init () {
+    require_once (PUBLISHPRESS_CAPS_ABSPATH . '/includes/test-user.php');
+    PP_Capabilities_Test_User::init();
+}
+add_action('init', 'ppc_test_user_init');
+
 
 /**
  * Redirect user to configured role login redirect
@@ -316,6 +330,60 @@ function ppc_roles_logout_redirect($redirect_to, $request, $user) {
 add_filter('logout_redirect', 'ppc_roles_logout_redirect', 10, 3);
 
 /**
+ * Block user role login
+ *
+ * @param $user (null|WP_User|WP_Error) WP_User if the user is authenticated. WP_Error or null otherwise.
+ * 
+ * @return WP_User object if credentials authenticate the user. WP_Error or null otherwise
+*/
+function ppc_roles_wp_authenticate_user($user) {
+
+    if (is_wp_error($user)) {
+        return $user;
+    }
+
+    if (isset($user->roles) && is_array($user->roles)) {
+        foreach ($user->roles as $user_role) {
+            //get role option
+            $role_option = get_option("pp_capabilities_{$user_role}_role_option", []);
+            if (is_array($role_option) && !empty($role_option) 
+                && !empty($role_option['disable_role_user_login']) 
+                && (int)$role_option['disable_role_user_login'] > 0
+            ) {
+                return new WP_Error('ppc_roles_user_banned', __('Login permission denied.', 'capsman-enhanced'));
+            }
+        }
+    }
+
+    return $user;
+}
+add_filter('wp_authenticate_user', 'ppc_roles_wp_authenticate_user', 1);
+
+/**
+ * Wocommerce role admin access restriction remove
+ */
+function ppc_roles_disable_woocommerce_admin_restrictions($restrict_access) {
+
+    if ($restrict_access && is_user_logged_in()) {
+        $user = get_userdata(get_current_user_id());
+
+        if (isset($user->roles) && is_array($user->roles)) {
+            foreach ($user->roles as $user_role) {
+                //get role option
+                $role_option = get_option("pp_capabilities_{$user_role}_role_option", []);
+                if (is_array($role_option) && !empty($role_option) && !empty($role_option['disable_woocommerce_admin_restrictions'])) {
+                    $restrict_access = false;
+                    break;
+                }
+            }
+        }
+    }
+    return $restrict_access;
+}
+add_filter('woocommerce_prevent_admin_access', 'ppc_roles_disable_woocommerce_admin_restrictions', 20);
+add_filter('woocommerce_disable_admin_bar', 'ppc_roles_disable_woocommerce_admin_restrictions', 20);
+
+/**
  * List of capabilities admin pages
  *
  */
@@ -329,7 +397,8 @@ function pp_capabilities_admin_pages(){
         'pp-capabilities-editor-features', 
         'pp-capabilities-backup', 
         'pp-capabilities-settings', 
-        'pp-capabilities-admin-features'
+        'pp-capabilities-admin-features', 
+        'pp-capabilities-profile-features'
     ];
 
    return apply_filters('pp_capabilities_admin_pages', $pp_capabilities_pages);
@@ -349,4 +418,172 @@ function is_pp_capabilities_admin_page(){
     }
 
     return apply_filters('is_pp_capabilities_admin_page', $is_pp_capabilities_page);
+}
+
+
+function pp_capabilities_nav_menu_access_denied()
+{
+    $forbidden = esc_attr__('You do not have permission to access this page.', 'capabilities-pro');
+    wp_die(esc_html($forbidden));
+}
+
+/**
+ * Nav menu restriction
+ */
+if (!is_admin()) {
+
+    /**
+     * Checks the menu items for their visibility options and
+     * removes menu items that are not visible.
+     *
+     * @return array
+     */
+    function pp_capabilities_nav_menu_permission($items, $menu, $args)
+    {
+        //return if it's admin page
+        if (is_admin()) {
+            return $items;
+        }
+
+        $disabled_nav_menu = '';
+
+        $user_roles = (array)wp_get_current_user()->roles;
+        $nav_menu_item_option = !empty(get_option('capsman_nav_item_menus')) ? (array)get_option('capsman_nav_item_menus') : [];
+
+        //add loggedin and guest option to role
+        if (is_user_logged_in()) {
+            $user_roles[] = 'ppc_users';
+        } else {
+            $user_roles[] = 'ppc_guest';
+        }
+
+        /* 
+         * PublishPress Permissions: Restrict Nav Menus for a Permission Group
+         * (Integrate PublishPress Capabilities Pro functionality).
+         *
+         * Copy into functions.php, modifying $restriction_role and $permission_group_ids to match your usage.
+         *
+         * note: Restriction_role can be an extra role that you create just for these menu restrictions.
+         *       Configure Capabilities > Nav Menus as desired for that role.
+         */
+        /*
+        add_filter('pp_capabilities_nav_menu_apply_role_restrictions', 
+            function($roles, $menu_object) {
+                if (function_exists('presspermit')) {
+                    $permission_group_ids = [12, 14, 15];   // group IDs to restrict
+                    $restriction_role = 'subscriber';       // role that has restrictions defined by Capabilities > Nav Menus
+
+                    if (array_intersect(
+                        array_keys(presspermit()->getUser()->groups['pp_group']), 
+                        $permission_group_ids
+                    )) {
+                        $roles []= $restriction_role;
+                    }
+                }
+
+                return $roles;
+            },
+            10, 2
+        );
+        */
+
+        // Support plugin integrations by allowing additional role-based limitations to be applied to user based on external criteria
+        $user_roles = apply_filters('pp_capabilities_nav_menu_apply_role_restrictions', $user_roles, compact('menu'));
+
+        //extract disabled menu for roles user belong
+        foreach ($user_roles as $role) {
+            if (array_key_exists($role, $nav_menu_item_option)) {
+                $disabled_nav_menu .= implode(", ", (array)$nav_menu_item_option[$role]) . ', ';
+            }
+        }
+
+        if ($disabled_nav_menu) {
+
+            //extract only IDS
+            $disabled_item_ids = preg_replace('!(0|[1-9][0-9]*)_([a-zA-Z0-9_.-]*),!s', '$1,', $disabled_nav_menu);
+
+            $disabled_nav_menu_array = array_filter(explode(", ", $disabled_item_ids));
+
+            foreach ($items as $key => $item) {
+
+                $item_parent = get_post_meta($item->ID, '_menu_item_menu_item_parent', true);
+
+                if (in_array($item->ID, $disabled_nav_menu_array) || in_array($item_parent, $disabled_nav_menu_array)) {
+                    unset($items[$key]);
+                }
+            }
+
+
+        }
+
+        return $items;
+    }
+    add_filter('wp_get_nav_menu_items', 'pp_capabilities_nav_menu_permission', 99, 3);
+
+    /**
+     * Checks the menu items for their privacy and remove
+     * if user do not have permission to item
+     *
+     */
+    function pp_capabilities_nav_menu_access($query)
+    {
+        if (!function_exists('wp_get_current_user')) {
+            return;
+        }
+
+        $nav_menu_item_option = !empty(get_option('capsman_nav_item_menus')) ? (array)get_option('capsman_nav_item_menus') : [];
+
+        if (!$nav_menu_item_option || !function_exists('wp_get_current_user')) {
+            return;
+        }
+
+        $user_roles = (array)wp_get_current_user()->roles;
+
+        //add loggedin and guest option to role
+        $user_roles[] = (is_user_logged_in()) ? 'ppc_users' : 'ppc_guest';
+
+        // Support plugin integrations by allowing additional role-based limitations to be applied to user based on external criteria
+        $user_roles = apply_filters('pp_capabilities_nav_menu_access_role_restrictions', $user_roles);
+
+        $disabled_nav_menu = '';
+
+        //extract disabled menu for roles user belong
+        foreach ($user_roles as $role) {
+            if (array_key_exists($role, $nav_menu_item_option)) {
+                $disabled_nav_menu .= implode(", ", (array)$nav_menu_item_option[$role]) . ', ';
+            }
+        }
+
+        if ($disabled_nav_menu) {
+
+            //we only need object id and object name e.g, 1_category
+            $disabled_object = preg_replace('!(0|[1-9][0-9]*)_([a-zA-Z0-9_.-]*),!s', '$2,', $disabled_nav_menu);
+            $disabled_nav_menu_array = array_filter(explode(", ", $disabled_object));
+
+            //category tags and taxonomy page check
+            if (is_category() || is_tag() || is_tax()) {
+                $taxonomy_id = get_queried_object()->term_id;
+                $taxonnomy_type = get_queried_object()->taxonomy;
+                foreach ($disabled_nav_menu_array as $item_option) {
+                    $option_object = $taxonomy_id . '_' . $taxonnomy_type;
+                    if (in_array($option_object, $disabled_nav_menu_array)) {
+                        pp_capabilities_nav_menu_access_denied();
+                    }
+                }
+            }
+
+            //post, page, cpt check
+            if (is_singular()) {
+                $post_type = get_post_type();
+                $post_id = get_the_ID();
+                foreach ($disabled_nav_menu_array as $item_option) {
+                    $option_object = $post_id . '_' . $post_type;
+                    if (in_array($option_object, $disabled_nav_menu_array)) {
+                        pp_capabilities_nav_menu_access_denied();
+                    }
+                }
+            }
+        }
+    }
+    add_action('parse_query', 'pp_capabilities_nav_menu_access');
 }

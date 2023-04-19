@@ -1,0 +1,8 @@
+2023-04-18T19:48:48+00:00 CRITICAL Uncaught Error: Call to a member function update_meta() on bool in /Applications/XAMPP/xamppfiles/htdocs/sistemaurbis/wp-content/plugins/elementor-pro/modules/theme-builder/classes/conditions-manager.php:295
+Stack trace:
+#0 /Applications/XAMPP/xamppfiles/htdocs/sistemaurbis/wp-content/plugins/elementor-pro/modules/theme-builder/classes/conditions-manager.php(168): ElementorPro\Modules\ThemeBuilder\Classes\Conditions_Manager->save_conditions(NULL, Array)
+#1 [internal function]: ElementorPro\Modules\ThemeBuilder\Classes\Conditions_Manager->ajax_save_theme_template_conditions(Array, Object(Elementor\Core\Common\Modules\Ajax\Module))
+#2 /Applications/XAMPP/xamppfiles/htdocs/sistemaurbis/wp-content/plugins/elementor/core/common/modules/ajax/module.php(175): call_user_func(Array, Array, Object(Elementor\Core\Common\Modules\Ajax\Module))
+#3 /Applications/XAMPP/xamppfiles/htdocs/sistemaurbis/wp-includes/class-wp-hook.php(308): Elementor\Core\Common\Modules\Ajax\Module->handle_ajax_request('')
+#4 /Applications/XAMPP/x en /Applications/XAMPP/xamppfiles/htdocs/sistemaurbis/wp-content/plugins/elementor-pro/modules/theme-builder/classes/conditions-manager.php en la línea 295
+

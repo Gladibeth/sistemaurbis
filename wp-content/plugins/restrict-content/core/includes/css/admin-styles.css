@@ -8,6 +8,9 @@
  * @copyright   Copyright (c) 2017, Restrict Content Pro
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  */
+#optin-modal-restrict-content-pro p {
+	max-width: 900px;
+}
 
 .rcp_key_wrap {
 	position: relative;
@@ -1519,7 +1522,8 @@ only screen and (min-device-pixel-ratio: 1.5) {
 	padding-left: 0;
 }
 
-/* Notifications */
+/* Notifications
+---------------------------------------------------------------*/
 .rcp__notification--inline {
 	background-color: #eeb9b9;
 	width: 700px;
@@ -1527,12 +1531,78 @@ only screen and (min-device-pixel-ratio: 1.5) {
 	border-radius: 5px;
 }
 
-/* Why Go Pro && Welcome Pages
+/* Why Go Pro && Welcome Pages && addons page
 -------------------------------------------------------------- */
-.rcp-why-go-pro-wrap {
+.restrict-content-addons-top-container {
+    display: grid;
+    grid-template-columns: 5fr 1fr;
+    grid-template-rows: 1fr;
+    padding: 20px 20px 20px 0;
+	gap: 10px;
+}
+@media screen and (max-width: 768px) {
+	.restrict-content-addons-top-container {
+		display: block!important;
+	}
+}
+.hide-grid {
+	display: flex!important;
+}
+.addons-flex-container {
+	display: flex;
+	gap: 20px;
+	flex-wrap: wrap;
+	margin-top: 25px;
+	justify-content: center;
+}
+.addon-card {
+	box-shadow: 0px 0px 4px #00000036;
+	border-radius: 10px;
+	width: 23%;
+	min-width: 260px;
+	font-size: 1rem;
 
 }
+@media screen and (max-width: 976px) {
+	.addon-card {
+		width: 90%;
+	}
+}
+.addon-card-header img {
+    width: 100%;
+	border-top-right-radius: 10px;
+	border-top-left-radius: 10px;
+}
+.addon-card-body {
+	padding: 20px;
+	display: flex;
+    flex-direction: column;
+    min-height: 225px;
+}
+.addon-card-title {
+	font-size: 1.3em;
+	line-height: 1.5em;
+}
+.addon-card-text {
+	font-size: 1em;
+}
+.addon-card-cta {
+	text-decoration: none;
+	font-weight: bold;
+	margin-top: auto;
+}
+.addons-cta a {
+    text-decoration: none;
+}
+.addons-cta {
+    margin-top: 75px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
 
+/* Why Go Pro && Welcome Pages
+---------------------------------------------------------------*/
 img.restrict-content-logo {
 	margin: 20px 0;
 	max-height: 50px;
@@ -1632,7 +1702,7 @@ img.restrict-content-logo {
 }
 
 .rcp-why-go-pro-wrap .rcp-go-pro-color-container .rcp-why-go-pro-inner-wrapper .rcp-why-go-pro-buttons-container .try-before-you-buy {
-	border: 4px solid #B685C9;
+	border: 4px solid #640af8;
 	border-radius: 7px;
 	text-align: center;
 	font-weight: 800;
@@ -1654,7 +1724,7 @@ img.restrict-content-logo {
 }
 
 .rcp-why-go-pro-wrap .rcp-go-pro-color-container .rcp-why-go-pro-inner-wrapper .rcp-why-go-pro-buttons-container .rcp-unlock-pro-features-add-ons {
-	background: transparent linear-gradient(94deg, #B685C9 0%, #743195 100%) 0% 0% no-repeat padding-box;
+	background: transparent linear-gradient(94deg, #640af8 0%, #743195 100%) 0% 0% no-repeat padding-box;
 	border-radius: 7px;
 	text-align: center;
 	font-weight: 800;
@@ -1787,7 +1857,7 @@ img.restrict-content-logo {
 }
 
 .rcp-pro-banner .rcp-pro-button a {
-	background: transparent linear-gradient(94deg, #B685C9 0%, #743195 100%) 0% 0% no-repeat padding-box;
+	background: transparent linear-gradient(94deg, #640af8 0%, #743195 100%) 0% 0% no-repeat padding-box;
 	border-radius: 7px;
 	text-align: center;
 	font-weight: 800;
@@ -1935,7 +2005,7 @@ img.restrict-content-logo {
 }
 
 .restrict-content-try-free-submit {
-	background: #B685C9 0% 0% no-repeat padding-box;
+	background: #640af8 0% 0% no-repeat padding-box;
 	border-radius: 0px 4px 4px 0px;
 	text-align: center;
 	font-weight: bold;
@@ -1967,7 +2037,6 @@ img.restrict-content-logo {
 	font-size: 1.1rem;
 	line-height: 22px;
 	color: #0A1A23;
-	text-transform: capitalize;
 	letter-spacing: 0px;
 }
 
@@ -1992,12 +2061,15 @@ img.restrict-content-logo {
 	color: #71747D;
 }
 
+.restrict-content-welcome-user {
+	text-transform: capitalize;
+}
 .restrict-content-welcome-right-container .restrict-content-welcome-advertisement .restrict-content-welcome-advertisement-form {
 	text-align: center;
 }
 
 .restrict-content-welcome-right-container .restrict-content-welcome-advertisement .restrict-content-welcome-button {
-	background: #B685C9 0% 0% no-repeat padding-box;
+	background: #640af8 0% 0% no-repeat padding-box;
 	border-radius: 4px;
 	text-align: center;
 	font-weight: bold;
@@ -2040,7 +2112,7 @@ img.restrict-content-logo {
 }
 
 .restrict-content-welcome-top-container .restrict-content-welcome-left-container .restrict-content-inner-container .restrict-content-help-section:hover .restrict-content-help-section-icon {
-	background-color: #B685C9;
+	background-color: #640af8;
 }
 
 .restrict-content-welcome-top-container .restrict-content-welcome-left-container .restrict-content-inner-container .restrict-content-help-section:hover .restrict-content-help-section-arrow {
@@ -2050,7 +2122,7 @@ img.restrict-content-logo {
 .restrict-content-help-section .restrict-content-help-section-icon {
 	width: 29px;
 	height: 29px;
-	border: 1px solid #B685C9;
+	border: 1px solid #640af8;
 	border-radius: 7px;
 	padding: 12px;
 }
@@ -2062,7 +2134,7 @@ img.restrict-content-logo {
 }
 
 .restrict-content-welcome-top-container .restrict-content-welcome-left-container .restrict-content-inner-container .restrict-content-help-section:hover #restrict-content-help-center {
-	background: url(../images/help-white.svg) no-repeat scroll right center #B685C9;
+	background: url(../images/help-white.svg) no-repeat scroll right center #640af8;
 	width: 30px;
 	height: 30px
 }
@@ -2074,7 +2146,7 @@ img.restrict-content-logo {
 }
 
 .restrict-content-welcome-top-container .restrict-content-welcome-left-container .restrict-content-inner-container .restrict-content-help-section:hover #restrict-content-trouble-shooting {
-	background: url(../images/bug-white.svg) no-repeat scroll right center #B685C9;
+	background: url(../images/bug-white.svg) no-repeat scroll right center #640af8;
 	width: 30px;
 	height: 30px
 }
@@ -2086,7 +2158,7 @@ img.restrict-content-logo {
 }
 
 .restrict-content-welcome-top-container .restrict-content-welcome-left-container .restrict-content-inner-container .restrict-content-help-section:hover #restrict-content-support-forum {
-	background: url(../images/support-white.svg) no-repeat scroll right center #B685C9;
+	background: url(../images/support-white.svg) no-repeat scroll right center #640af8;
 	width: 30px;
 	height: 30px
 }
@@ -2115,7 +2187,7 @@ img.restrict-content-logo {
 
 .restrict-content-help-section:hover {
 	box-shadow: 0px 3px 6px #22222240;
-	border: 1px solid #B685C9 !important;
+	border: 1px solid #640af8 !important;
 }
 
 .restrict-content-premium-support {
@@ -2159,7 +2231,7 @@ img.restrict-content-logo {
 }
 
 .restrict-content-unlock-premium-features h3 {
-	text-align: left;
+	text-align: center;
 	font-weight: 700;
 	font-size: 1rem;
 	line-height: 21px;
@@ -2168,7 +2240,7 @@ img.restrict-content-logo {
 }
 
 .restrict-content-unlock-premium-features p {
-	text-align: left;
+	text-align: center;
 	font-weight: 400;
 	font-size: .7rem;
 	line-height: 14px;
@@ -2185,13 +2257,15 @@ img.restrict-content-logo {
 }
 
 .restrict-content-unlock-premium-features .go-pro-now {
+	display: flex;
+    justify-content: center;
 	text-align: center;
 	font-weight: 700;
-	font-size: 1.1rem;
+	font-size: 1rem;
 	line-height: 19px;
 	letter-spacing: 0px;
 	color: #FFFFFF;
-	background: #B685C9 0% 0% no-repeat padding-box;
+	background: #640af8 0% 0% no-repeat padding-box;
 	border-radius: 4px;
 	padding: 10px 40px;
 	text-decoration: none;
@@ -2331,7 +2405,7 @@ img.restrict-content-logo {
 	}
 
 	.restrict-content-try-free-submit {
-		background: #B685C9 0% 0% no-repeat padding-box;
+		background: #640af8 0% 0% no-repeat padding-box;
 		border-radius: 4px;
 		width: 100%;
 		display: block;
@@ -2344,4 +2418,9 @@ img.restrict-content-logo {
 		color: #FFFFFF;
 		padding: 10px 0px;
 	}
+}
+
+/* Override Telemetry 90% with. */
+.stellarwp-telemetry-modal__inner {
+	width: 900px !important;
 }

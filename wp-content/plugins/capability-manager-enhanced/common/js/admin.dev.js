@@ -3,9 +3,12 @@ jQuery(document).ready( function($) {
 	$('a.neg-type-caps').attr('title',cmeAdmin.typeCapsNegationCaption);
 	$('td.cap-unreg').attr('title',cmeAdmin.typeCapUnregistered);
 	$('a.normal-cap').attr('title',cmeAdmin.switchableCaption);
-	$('span.cap-x').attr('title',cmeAdmin.capNegated);
+	$('span.cap-x:not([class*="pp-cap-key"])').attr('title',cmeAdmin.capNegated);
 	$('table.cme-checklist input[class!="cme-check-all"]').not(':disabled').attr('title',cmeAdmin.chkCaption);
 
+  if ($('.ppc-checkboxes-documentation-link').length > 0) {
+    $('.ppc-checkboxes-documentation-link').attr('target', 'blank'); 
+  }
 	$('table.cme-checklist a.neg-cap').click( function(e) {
 		$(this).closest('td').removeClass('cap-yes').removeClass('cap-no').addClass('cap-neg');
 
@@ -435,5 +438,25 @@ jQuery(document).ready( function($) {
          document.getSelection().empty();
        }
     });
+
+  
+  if ($('.pp-capability-menus-wrapper.profile-features').length > 0) {
+    /**
+     * Make profile features sortable
+     */
+    $(".pp-capability-menus-wrapper.profile-features table.pp-capability-menus-select tbody").sortable({
+      axis: "y",
+      update: function (e, ui) {
+        var fields_order = [];
+        $('.pp-capability-menus-wrapper.profile-features table.pp-capability-menus-select tbody tr.ppc-sortable-row').each(function () {
+          var element_key = $(this).attr('data-element_key');
+          if (element_key) {
+            fields_order.push(element_key);
+          }
+        });
+        $('.capsman_profile_features_elements_order').val(fields_order.join(","));
+      }
+    });
+  }
 
 });

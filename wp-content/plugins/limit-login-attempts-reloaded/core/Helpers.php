@@ -8,12 +8,11 @@ class LLA_Helpers {
     /**
      * @param string $msg
      */
-    public static function show_error( $msg = '' ) {
-        if( empty( $msg ) ) {
-            return;
-        }
+    public static function show_message( $msg = '', $is_error = false ) {
+        if( empty( $msg ) ) return;
 
-        echo '<div id="message" class="updated fade"><p>' . $msg . '</p></div>';
+        $class = $is_error ? 'error' : 'updated';
+        echo '<div id="message" class="' . $class . ' fade"><p>' . $msg . '</p></div>';
     }
 
     /**
@@ -107,5 +106,40 @@ class LLA_Helpers {
 		$content = preg_replace( '/\\\+/', '\\', $content );
 
 		return $content;
+	}
+
+	public static function isAutoUpdateEnabled() {
+		$auto_update_plugins = get_site_option( 'auto_update_plugins' );
+		return is_array( $auto_update_plugins ) && in_array( LLA_PLUGIN_BASENAME, $auto_update_plugins );
+	}
+
+	public static function getWordpressVersion() {
+		global $wp_version;
+		return $wp_version;
+	}
+
+	public static function short_number($num) {
+	    $units = ['', 'K', 'M', 'B', 'T'];
+	    for ($i = 0; $num >= 1000; $i++) {
+	        $num /= 1000;
+	    }
+		return round($num, 1) . $units[$i];
+	}
+
+	public static function send_mail_with_logo( $to, $subject, $body ) {
+
+		add_action( 'phpmailer_init', array( 'LLA_Helpers', 'add_attachments_to_php_mailer' ) );
+
+		@wp_mail( $to, $subject, $body, array( 'content-type: text/html' ) );
+
+		remove_action( 'phpmailer_init', array( 'LLA_Helpers', 'add_attachments_to_php_mailer' ) );
+	}
+
+	public static function add_attachments_to_php_mailer( &$phpmailer ) {
+		$logo_path = LLA_PLUGIN_DIR . '/assets/img/logo.png';
+
+		if( file_exists( $logo_path ) ) {
+			$phpmailer->AddEmbeddedImage( $logo_path, 'logo' );
+		}
 	}
 }

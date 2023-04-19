@@ -129,6 +129,16 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 							'label' => 'Profile Picture',
 							'icon'  => 'ur-icon ur-icon-user-display-name',
 						),
+						array(
+							'id'    => 'user_registration_range',
+							'label' => 'Range',
+							'icon'  => 'ur-icon ur-icon-range',
+						),
+						array(
+							'id'    => 'user_registration_custom_url',
+							'label' => 'Custom URL',
+							'icon'  => 'ur-icon ur-icon-website',
+						),
 					),
 				),
 				array(
@@ -429,8 +439,8 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 		public function add_registration_menu() {
 			add_submenu_page(
 				'user-registration',
-				__( 'Add New', 'user-registration' ),
-				__( 'Add New', 'user-registration' ),
+				esc_html__( 'Add New', 'user-registration' ),
+				esc_html__( 'Add New', 'user-registration' ),
 				'manage_user_registration',
 				'add-new-registration',
 				array(
@@ -500,6 +510,17 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 					),
 					home_url()
 				);
+			}
+
+			if ( isset( $_GET['onboarding-skipped'] ) ) {
+				update_option( 'user_registration_onboarding_skipped', true );
+			}
+
+			if ( isset( $_GET['edit-registration'] ) ) {
+				// Forms view.
+				include_once dirname( __FILE__ ) . '/views/html-admin-page-forms.php';
+			} else {
+				UR_Admin_Form_Templates::load_template_view();
 			}
 
 			// Forms view.
@@ -632,7 +653,7 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 				$form_data_content = str_replace( '"noopener noreferrer"', "'noopener noreferrer'", $form_data_content );
 				$form_data_array   = json_decode( $form_data_content );
 
-				if ( json_last_error() != JSON_ERROR_NONE ) {
+				if ( json_last_error() !== JSON_ERROR_NONE ) {
 					throw new Exception( '' );
 				}
 			} catch ( Exception $e ) {
@@ -642,7 +663,7 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 			try {
 				$form_row_ids_array = json_decode( $form_row_ids );
 
-				if ( json_last_error() != JSON_ERROR_NONE ) {
+				if ( json_last_error() !== JSON_ERROR_NONE ) {
 					throw new Exception( '' );
 				}
 			} catch ( Exception $e ) {
@@ -757,7 +778,7 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 							}
 						}
 
-						if ( count( $grid_lists ) == 0 ) {
+						if ( count( $grid_lists ) === 0 ) {
 							echo '<div class="user-registration-dragged-me">
 						<div class="user-registration-dragged-me-text"><p>' . esc_html__( 'Drag your first form item here.', 'user-registration' ) . '</p></div>
 						</div>';

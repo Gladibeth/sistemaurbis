@@ -4,10 +4,11 @@
  *
  * @package WP_Smush
  *
- * @var integer $count Total number of images to smush.
+ * @var integer $count          Total number of images to smush.
+ * @var string  $background_in_processing_notice
+ * @var bool $background_processing_enabled
+ * @var string  $in_processing_notice
  */
-
-use Smush\Core\Core;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -22,7 +23,16 @@ if ( ! defined( 'WPINC' ) ) {
 		<div class="sui-notice-content">
 			<div class="sui-notice-message">
 				<i class="sui-notice-icon sui-icon-info sui-md" aria-hidden="true"></i>
-				<p><?php esc_html_e( 'Bulk smush is currently running. You need to keep this page open for the process to complete.', 'wp-smushit' ); ?></p>
+				<p>
+					<?php
+					if ( $background_processing_enabled ) {
+						$desc = $background_in_processing_notice;
+					} else {
+						$desc = $in_processing_notice;
+					}
+					echo wp_kses_post( $desc );
+					?>
+				</p>
 			</div>
 		</div>
 	</div>
@@ -39,7 +49,8 @@ if ( ! defined( 'WPINC' ) ) {
 				<span class="wp-smush-progress-inner" style="width: 0%"></span>
 			</div>
 		</div>
-		<button class="sui-progress-close wp-smush-cancel-bulk" type="button">
+		<?php $cancel_btn_class = $background_processing_enabled ? 'wp-smush-bo-cancel-bulk' : 'wp-smush-cancel-bulk'; ?>
+		<button class="sui-progress-close <?php echo esc_attr( $cancel_btn_class ); ?>" type="button">
 			<?php esc_html_e( 'Cancel', 'wp-smushit' ); ?>
 		</button>
 		<button class="sui-progress-close sui-button-icon sui-tooltip wp-smush-all sui-hidden" type="button" data-tooltip="<?php esc_html_e( 'Resume scan.', 'wp-smushit' ); ?>">
@@ -49,7 +60,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 	<div class="sui-progress-state">
 		<span class="sui-progress-state-text">
-			<span>0</span>/<span class="wp-smush-total-count"><?php echo absint( $count ); ?></span> <?php esc_html_e( 'images smushed', 'wp-smushit' ); ?>
+			<span>0</span>/<span class="wp-smush-total-count"><?php echo absint( $count ); ?></span> <?php esc_html_e( 'images optimized', 'wp-smushit' ); ?>
 		</span>
 	</div>
 

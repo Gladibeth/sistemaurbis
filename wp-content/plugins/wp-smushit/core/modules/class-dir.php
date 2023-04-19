@@ -180,7 +180,13 @@ class Dir extends Abstract_Module {
 	 */
 	public function directory_smush_start() {
 		check_ajax_referer( 'wp-smush-ajax' );
+		// Check for permission.
+		$capability = is_multisite() ? 'manage_network' : 'manage_options';
+		if ( ! Helper::is_user_allowed( $capability ) ) {
+			wp_die( esc_html__( 'Unauthorized', 'wp-smushit' ), 403 );
+		}
 		$this->scanner->init_scan();
+		do_action('wp_smush_directory_smush_start');
 		wp_send_json_success();
 	}
 
@@ -191,6 +197,12 @@ class Dir extends Abstract_Module {
 	 */
 	public function directory_smush_check_step() {
 		check_ajax_referer( 'wp-smush-ajax' );
+
+		// Check for permission.
+		$capability = is_multisite() ? 'manage_network' : 'manage_options';
+		if ( ! Helper::is_user_allowed( $capability ) ) {
+			wp_die( esc_html__( 'Unauthorized', 'wp-smushit' ), 403 );
+		}
 
 		$urls         = $this->get_scanned_images();
 		$current_step = isset( $_POST['step'] ) ? absint( $_POST['step'] ) : 0;
@@ -211,6 +223,12 @@ class Dir extends Abstract_Module {
 	 */
 	public function directory_smush_finish() {
 		check_ajax_referer( 'wp-smush-ajax' );
+
+		// Check for permission.
+		$capability = is_multisite() ? 'manage_network' : 'manage_options';
+		if ( ! Helper::is_user_allowed( $capability ) ) {
+			wp_die( esc_html__( 'Unauthorized', 'wp-smushit' ), 403 );
+		}
 
 		$items   = isset( $_POST['items'] ) ? absint( $_POST['items'] ) : 0;
 		$failed  = isset( $_POST['failed'] ) ? absint( $_POST['failed'] ) : 0;
@@ -238,6 +256,11 @@ class Dir extends Abstract_Module {
 	 */
 	public function directory_smush_cancel() {
 		check_ajax_referer( 'wp-smush-ajax' );
+		// Check for permission.
+		$capability = is_multisite() ? 'manage_network' : 'manage_options';
+		if ( ! Helper::is_user_allowed( $capability ) ) {
+			wp_die( esc_html__( 'Unauthorized', 'wp-smushit' ), 403 );
+		}
 		$this->scanner->reset_scan();
 		wp_send_json_success();
 	}
@@ -521,7 +544,7 @@ class Dir extends Abstract_Module {
 	 */
 	public function directory_list() {
 		// Check For permission.
-		if ( ! current_user_can( 'manage_options' ) || ! is_user_logged_in() ) {
+		if ( ! Helper::is_user_allowed( 'manage_options' ) || ! is_user_logged_in() ) {
 			Helper::logger()->dir()->error( 'Unauthorized - Permission access.' );
 			wp_send_json_error( __( 'Unauthorized', 'wp-smushit' ) );
 		}

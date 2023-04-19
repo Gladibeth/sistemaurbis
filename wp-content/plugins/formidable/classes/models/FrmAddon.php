@@ -251,6 +251,10 @@ class FrmAddon {
 	protected function update_pro_capabilities() {
 		global $wp_roles;
 
+		if ( ! function_exists( 'get_editable_roles' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/user.php';
+		}
+
 		$caps     = FrmAppHelper::frm_capabilities( 'pro_only' );
 		$roles    = get_editable_roles();
 		$settings = new FrmSettings();
@@ -480,7 +484,7 @@ class FrmAddon {
 			}
 
 			$response = $this->get_license_status();
-			if ( 'revoked' === $response['status'] || 'blocked' === $response['status'] || 'disabled' === $response['status'] ) {
+			if ( 'revoked' === $response['status'] || 'blocked' === $response['status'] || 'disabled' === $response['status'] || 'missing' === $response['status'] ) {
 				$this->clear_license();
 			}
 		}

@@ -36,8 +36,14 @@ class FrmXMLHelper {
 			return new WP_Error( 'SimpleXML_parse_error', __( 'Your server does not have XML enabled', 'formidable' ), libxml_get_errors() );
 		}
 
-		$dom     = new DOMDocument();
-		$success = $dom->loadXML( file_get_contents( $file ) );
+		$xml_string = file_get_contents( $file );
+		self::maybe_fix_xml( $xml_string );
+
+		$dom = new DOMDocument();
+
+		// LIBXML_COMPACT activates small nodes allocation optimization.
+		// Use LIBXML_PARSEHUGE to avoid "parser error : internal error: Huge input lookup" for large (300MB) files.
+		$success = $dom->loadXML( $xml_string, LIBXML_COMPACT | LIBXML_PARSEHUGE );
 		if ( ! $success ) {
 			return new WP_Error( 'SimpleXML_parse_error', __( 'There was an error when reading this XML file', 'formidable' ), libxml_get_errors() );
 		}
@@ -55,6 +61,33 @@ class FrmXMLHelper {
 		}
 
 		return self::import_xml_now( $xml );
+	}
+
+	/**
+	 * @since 6.2.3
+	 *
+	 * @param string $xml_string
+	 * @return void
+	 */
+	private static function maybe_fix_xml( &$xml_string ) {
+		if ( '<?xml' !== substr( $xml_string, 0, 5 ) ) {
+			// Some XML files have may have unexpected characters at the start.
+			$xml_string = substr( $xml_string, strpos( $xml_string, '<?xml' ) );
+		}
+
+		// The Equity theme adds a <meta name="generator" content="Equity 1.7.13" /> tag using the "the_generator" filter.
+		// Strip that out as it breaks the XML import.
+		$channel_start_position     = strpos( $xml_string, '<channel>' );
+		$content_before_channel_tag = substr( $xml_string, 0, $channel_start_position );
+		if ( 0 !== strpos( $content_before_channel_tag, '<meta name="generator" ' ) ) {
+			$content_before_channel_tag = preg_replace(
+				'/<meta\s+[^>]*name="generator"[^>]*\/>/i',
+				'',
+				$content_before_channel_tag,
+				1
+			);
+			$xml_string = $content_before_channel_tag . substr( $xml_string, $channel_start_position );
+		}
 	}
 
 	/**
@@ -629,11 +662,47 @@ class FrmXMLHelper {
 		$defaults           = self::default_field_options( $f['type'] );
 		$f['field_options'] = array_merge( $defaults, $f['field_options'] );
 
+		if ( is_callable( 'FrmProFileImport::import_attachment' ) ) {
+			$f = self::maybe_import_images_for_options( $f );
+		}
+
 		$new_id = FrmField::create( $f );
 		if ( $new_id != false ) {
 			$imported['imported']['fields'] ++;
 			do_action( 'frm_after_field_is_imported', $f, $new_id );
 		}
+	}
+
+	/**
+	 * Import images for radio buttons and checkboxes from image src if available.
+	 *
+	 * @since 5.5.1
+	 *
+	 * @param array $field
+	 * @return array
+	 */
+	private static function maybe_import_images_for_options( $field ) {
+		if ( empty( $field['options'] ) || ! is_array( $field['options'] ) ) {
+			return $field;
+		}
+
+		foreach ( $field['options'] as $key => $option ) {
+			if ( ! is_array( $option ) || empty( $option['src'] ) ) {
+				continue;
+			}
+
+			$field_object       = (object) $field;
+			$field_object->type = 'file'; // Fake the file type as FrmProImport::import_attachment checks for file type.
+
+			$image_id = FrmProFileImport::import_attachment( $option['src'], $field_object );
+			unset( $field['options'][ $key ]['src'] ); // Remove the src from options as it isn't required after import.
+
+			if ( is_numeric( $image_id ) ) {
+				$field['options'][ $key ]['image'] = $image_id;
+			}
+		}
+
+		return $field;
 	}
 
 	/**
@@ -689,7 +758,7 @@ class FrmXMLHelper {
 			return;
 		}
 
-		if ( is_numeric( $form['options']['custom_style'] ) ) {
+		if ( is_numeric( $form['options']['custom_style'] ) && 1 === intval( $form['options']['custom_style'] ) ) {
 			// Set to default
 			$form['options']['custom_style'] = 1;
 		} else {
@@ -790,15 +859,15 @@ class FrmXMLHelper {
 			} elseif ( $post['post_type'] === 'frm_styles' ) {
 				// Properly encode post content before inserting the post
 				$post['post_content'] = FrmAppHelper::maybe_json_decode( $post['post_content'] );
-				$custom_css           = isset( $post['post_content']['custom_css'] ) ? $post['post_content']['custom_css'] : '';
 				$post['post_content'] = FrmAppHelper::prepare_and_encode( $post['post_content'] );
 
 				// Create/update post now
 				$post_id = wp_insert_post( $post );
-				self::maybe_update_custom_css( $custom_css );
 			} else {
 				if ( $post['post_type'] === 'frm_display' ) {
 					$post['post_content'] = self::maybe_prepare_json_view_content( $post['post_content'] );
+				} elseif ( 'page' === $post['post_type'] && isset( $imported['posts'][ $post['post_parent'] ] ) ) {
+					$post['post_parent'] = $imported['posts'][ $post['post_parent'] ];
 				}
 				// Create/update post now
 				$post_id = wp_insert_post( $post );
@@ -808,7 +877,7 @@ class FrmXMLHelper {
 				continue;
 			}
 
-			if ( false !== strpos( $post['post_content'], '[frm-display-data' ) || false !== strpos( $post['post_content'], '[formidable' ) ) {
+			if ( false !== strpos( $post['post_content'], '[display-frm-data' ) || false !== strpos( $post['post_content'], '[formidable' ) ) {
 				$posts_with_shortcodes[ $post_id ] = $post;
 			}
 
@@ -842,9 +911,45 @@ class FrmXMLHelper {
 		}
 		unset( $posts_with_shortcodes, $view_ids );
 
+		if ( ! empty( $imported['forms'] ) ) {
+			// clear imported forms style cache to make sure the new styles are applied to the forms
+			self::clear_forms_style_caches( $imported['forms'] );
+		}
+
 		self::maybe_update_stylesheet( $imported );
 
+		flush_rewrite_rules();
+
 		return $imported;
+	}
+
+	/**
+	 * Clears styles from cache for imported forms
+	 *
+	 * @param array $imported_forms
+	 */
+	private static function clear_forms_style_caches( $imported_forms ) {
+		$where = array(
+			'id' => $imported_forms,
+			'options LIKE' => '"old_style"',
+		);
+		$forms = FrmDb::get_results( 'frm_forms', $where );
+
+		foreach ( $forms as $form ) {
+			FrmAppHelper::unserialize_or_decode( $form->options );
+			if ( ! $form->options ) {
+				continue;
+			}
+			$where = array(
+				'post_name' => $form->options['old_style'],
+				'post_type' => FrmStylesController::$post_type,
+			);
+
+			$select = 'ID';
+
+			$cache_key = FrmDb::generate_cache_key( $where, array( 'limit' => 1 ), $select, 'var' );
+			FrmDb::delete_cache_and_transient( $cache_key, 'post' );
+		}
 	}
 
 	/**
@@ -1104,22 +1209,38 @@ class FrmXMLHelper {
 		}
 	}
 
+	/**
+	 * @param array $post
+	 * @param int   $post_id
+	 * @return void
+	 */
 	private static function update_postmeta( &$post, $post_id ) {
 		foreach ( $post['postmeta'] as $k => $v ) {
-			if ( '_edit_last' == $k ) {
-				$v = FrmAppHelper::get_user_id_param( $v );
-			} elseif ( '_thumbnail_id' == $k && FrmAppHelper::pro_is_installed() ) {
-				// Change the attachment ID.
-				$field_obj = FrmFieldFactory::get_field_type( 'file' );
-				$v         = $field_obj->get_file_id( $v );
-			}
+			switch ( $k ) {
+				case '_edit_last':
+					$v = FrmAppHelper::get_user_id_param( $v );
+					break;
 
-			if ( 'frm_dyncontent' === $k && is_array( $v ) ) {
-				$v = json_encode( $v );
+				case '_thumbnail_id':
+					if ( FrmAppHelper::pro_is_installed() ) {
+						// Change the attachment ID.
+						$field_obj = FrmFieldFactory::get_field_type( 'file' );
+						$v         = $field_obj->get_file_id( $v );
+					}
+					break;
+
+				case 'frm_dyncontent':
+					if ( is_array( $v ) ) {
+						$v = json_encode( $v );
+					}
+					break;
+
+				case 'frm_param':
+					add_rewrite_endpoint( $v, EP_PERMALINK | EP_PAGES );
+					break;
 			}
 
 			update_post_meta( $post_id, $k, $v );
-
 			unset( $k, $v );
 		}
 	}
@@ -1136,23 +1257,6 @@ class FrmXMLHelper {
 				FrmViewsLayout::maybe_create_layouts_for_view( $post_id, $listing_layout, $detail_layout );
 			}
 		}
-	}
-
-	/**
-	 * If a template includes custom css, let's include it.
-	 * The custom css is included on the default style.
-	 *
-	 * @since 2.03
-	 */
-	private static function maybe_update_custom_css( $custom_css ) {
-		if ( empty( $custom_css ) ) {
-			return;
-		}
-
-		$frm_style                                 = new FrmStyle();
-		$default_style                             = $frm_style->get_default_style();
-		$default_style->post_content['custom_css'] .= "\r\n\r\n" . $custom_css;
-		$frm_style->save( $default_style );
 	}
 
 	private static function maybe_update_stylesheet( $imported ) {
@@ -1349,6 +1453,7 @@ class FrmXMLHelper {
 	 */
 	public static function prepare_field_for_export( &$field ) {
 		self::remove_default_field_options( $field );
+		self::add_image_src_to_image_options( $field );
 	}
 
 	/**
@@ -1379,6 +1484,39 @@ class FrmXMLHelper {
 		}
 
 		$field->field_options = serialize( $options );
+	}
+
+	/**
+	 * Add image "src" key to each image option so the image can be imported to another website.
+	 *
+	 * @since 5.5.1
+	 *
+	 * @param stdClass $field
+	 * @return void
+	 */
+	private static function add_image_src_to_image_options( $field ) {
+		if ( empty( $field->options ) || false === strpos( $field->options, 'image' ) ) {
+			return;
+		}
+
+		$updated = false;
+		$options = $field->options;
+		FrmAppHelper::unserialize_or_decode( $options );
+
+		if ( ! $options || ! is_array( $options ) ) {
+			return;
+		}
+
+		foreach ( $options as $key => $option ) {
+			if ( is_array( $option ) && ! empty( $option['image'] ) ) {
+				$options[ $key ]['src'] = wp_get_attachment_url( $option['image'] );
+				$updated                = true;
+			}
+		}
+
+		if ( $updated ) {
+			$field->options = maybe_serialize( $options );
+		}
 	}
 
 	/**
@@ -1436,7 +1574,7 @@ class FrmXMLHelper {
 		if ( is_array( $str ) ) {
 			$str = json_encode( $str );
 		} elseif ( seems_utf8( $str ) === false ) {
-			$str = utf8_encode( $str );
+			$str = FrmAppHelper::maybe_utf8_encode( $str );
 		}
 
 		if ( is_numeric( $str ) ) {

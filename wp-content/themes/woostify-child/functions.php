@@ -1,0 +1,461 @@
+<?php
+// Exit if accessed directly
+if ( !defined( 'ABSPATH' ) ) exit;
+
+// BEGIN ENQUEUE PARENT ACTION
+// AUTO GENERATED - Do not modify or remove comment markers above or below:
+
+if ( !function_exists( 'chld_thm_cfg_locale_css' ) ):
+    function chld_thm_cfg_locale_css( $uri ){
+        if ( empty( $uri ) && is_rtl() && file_exists( get_template_directory() . '/rtl.css' ) )
+            $uri = get_template_directory_uri() . '/rtl.css';
+        return $uri;
+    }
+endif;
+add_filter( 'locale_stylesheet_uri', 'chld_thm_cfg_locale_css' );
+
+// END ENQUEUE PARENT ACTION
+function resources_cpt_generating_rule($wp_rewrite) {
+    $rules = array();
+    $terms = get_terms( array(
+        'taxonomy' => 'sistema',
+        'hide_empty' => false,
+    ) );
+   
+    $post_type = 'landing';
+
+    foreach ($terms as $term) {    
+                
+        $rules['sistema/' . $term->slug . '/([^/]*)$'] = 'index.php?post_type=' . $post_type. '&landing=$matches[1]&name=$matches[1]';
+                        
+    }
+
+    // merge with global rules
+    $wp_rewrite->rules = $rules + $wp_rewrite->rules;
+}
+add_filter('generate_rewrite_rules', 'resources_cpt_generating_rule');
+
+
+function change_link( $permalink, $post ) {
+    
+    if( $post->post_type == 'landing' ) {
+        $resource_terms = get_the_terms( $post, 'sistema' );
+        $term_slug = '';
+        if( ! empty( $resource_terms ) ) {
+            foreach ( $resource_terms as $term ) {
+
+                // The featured resource will have another category which is the main one
+                if( $term->slug == 'featured' ) {
+                    continue;
+                }
+
+                $term_slug = $term->slug;
+                break;
+            }
+        }
+        $permalink = get_home_url() ."/sistema/" . $term_slug . '/' . $post->post_name;
+    }
+    return $permalink;
+
+}
+
+
+//redirigir a area privada despues de iniciar sesion
+
+add_filter('post_type_link',"change_link",10,2);
+
+function my_custom_login_redirect(){
+
+  wp_redirect( home_url("pagar-membresia") );
+
+  exit();
+}
+add_action( 'wp_login','my_custom_login_redirect' );
+
+// agregar shortcode de usuarios
+
+add_shortcode('list-landing', 'shortcode_list_landing');
+
+function shortcode_list_landing() {
+
+	$args = array(
+		'post_type' => 'landing',
+		'author'        =>  get_current_user_id(), // I could also use $user_ID, right?        
+		);
+	$current_user_posts = get_posts( $args );
+	if(empty($current_user_posts)){
+		return;
+	}
+	?>
+
+		<table class="main-table__landing">
+			<thead>
+				<tr>
+				   <th>Landing</th>
+				   <th width="300">Url</th>
+				   <th width="150">F. de creación</th>
+				   <th>Accion</th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php for($i=0; $i<count($current_user_posts); $i++){
+				  $id = $current_user_posts[$i]->ID;
+				  $url = get_the_permalink($id); ?>
+				<tr id="<?= get_the_terms( $id, 'sistema' )[0]->term_id; ?>"  data-id="<?= get_the_terms( $id, 'sistema' )[0]->term_id; ?>"> 
+					<td  ><?= get_the_terms( $id, 'sistema' )[0]->name; ?> </td> 
+					<td><a href="<?= $url; ?>" target="_blank"><?= $url; ?></a></td> 
+					<td><?= get_the_date( 'D j M' , $id ); ?></td> 
+					<td>
+ 						<div class="main-table__actions">
+							<a class="btn" href="<?= $url; ?>" title="Ver" target="_blank"><i class="fa fa-eye" aria-hidden="true"></i></a>
+							<a onclick="copiarAlPortapapeles(this)" title="Copiar" class="btn" data-url="<?= $url; ?>" ><i class="fa fa-clone" aria-hidden="true"></i></a>
+							<a  title="Editar" href="#open-modal__edict" id="<?= $id; ?>" data-name="<?= get_the_terms( $id, 'sistema' )[0]->name; ?>" class="btn btn-pencil main-modal__edict" data-url="<?= $url; ?>" ><i class="fa fa-pencil-square" aria-hidden="true"></i></a>
+							<a title="Borrar" href="#open-modal__trash" id="<?= $id; ?>" data-name="<?= get_the_terms( $id, 'sistema' )[0]->name; ?>" data-id-cat="<?= get_the_terms( $id, 'sistema' )[0]->term_id; ?>"   class="btn main-modal__trash" data-url="<?= $url; ?>" ><i class="fa fa-trash" aria-hidden="true"></i></a>
+						</div>
+					</td>
+				</tr>
+			<?php } ?>	
+			</tbody>
+			
+        </table>
+		
+		<div id="open-modal__edict" class="modal-window-gf">
+		  <div>
+			<a href="#" title="Cerrar" class="modal-close-gf"><i class="fa fa-times" aria-hidden="true"></i></a>
+			<h2 class="modal-edict__title"></h2>
+			  <form>
+				  <input type="text" id="updateInput" name="enlaceLanding" placeholder="Ingresa la nueva url">
+				  <input type="hidden" value="" id="inputHidden" name="idLanding">
+				  <button class="main-button__update" data-id="">
+					  Actualizar
+				  </button>
+				  
+			  </form>
+		  </div>
+		</div>
+		<div id="open-modal__trash" class="modal-window-gf">
+		  <div>
+			<a href="#" title="Cerrar" class="modal-close-gf"><i class="fa fa-times" aria-hidden="true"></i></a>
+			<h2 class="modal-trash__title">
+			  Estas seguro que deseas eliminar
+				<br>
+				  <span class="modal-trash__title-span">
+
+				  </span>
+			  </h2>
+			  
+			  <div class="open-modal__btns">
+				  <a href="#" class="open-modal__btnsa">
+				  Cancelar
+			  </a>
+			  <button data-id=""  class="main-button__trash" >
+				  Eliminar
+			  </button>
+			  </div>
+			  
+		  </div>
+		</div>
+		<style>
+		
+		</style>
+		<script>
+		
+		function copiarAlPortapapeles(elemento) {
+			console.log(elemento);
+
+		  // Crea un campo de texto "oculto"
+		  var aux = document.createElement("input");
+
+		  // Asigna el contenido del elemento especificado al valor del campo
+		  aux.setAttribute("value", elemento.getAttribute('data-url'));
+
+		  // Añade el campo a la página
+		  document.body.appendChild(aux);
+
+		  // Selecciona el contenido del campo
+		  aux.select();
+
+		  // Copia el texto seleccionado
+		  document.execCommand("copy");
+
+		  // Elimina el campo de la página
+		  document.body.removeChild(aux);
+
+		}
+		</script>
+<?php
+    
+}
+
+
+
+
+add_action('wp_header', 'my_icons');
+
+function my_icons(){
+	?>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+<?php
+}
+
+
+
+add_action( 'wp_ajax_nopriv_my_trash', 'my_trash' );
+add_action( 'wp_ajax_my_trash', 'my_trash' );
+function my_trash(){
+	$id = (int) $_POST['id'];
+	$result = wp_delete_post( $id, true );
+	return wp_send_json(['status' => $result, 'id_cat' => $_POST['id_cat'] ]);
+}
+
+add_action( 'wp_ajax_nopriv_my_update', 'my_update' );
+add_action( 'wp_ajax_my_update', 'my_update' );
+function my_update(){
+
+  $my_post = array(
+      'ID'           => $_POST['id'],
+      'post_excerpt'   => $_POST['id_url'],
+  );
+ 
+	// Update the post into the database
+  $result = wp_update_post( $my_post );
+	return wp_send_json(['status' => $result, 'id_url' => $_POST['id_url'] ]);
+}
+
+
+
+
+add_action('wp_footer','my_password');
+
+function my_password(){
+	?>
+<script>
+	jQuery(document).ready(function(){
+		jQuery('.elementor-lost-password').attr('href', '/sistemaurbis/pagina-de-recuperar-contrasena/');
+	})
+</script>
+	
+<?php
+}
+
+
+
+add_action('wp_footer', 'my_modals');
+
+function my_modals(){
+	?>
+<script>
+jQuery('.main-modal__edict').click(function(){
+	let title = jQuery(this).attr('data-name');
+	let id = jQuery(this).attr('id');
+	let dataUrl = jQuery(this).attr('data-url');
+	let modalTitle = jQuery('.modal-edict__title').text(title)
+	let inputHidden = jQuery('#inputHidden').attr('value',id);
+	let inputUpdate = jQuery('.main-button__update').attr('data-id',id);
+	let inputUrl = jQuery('.main-button__update').attr('data-url',dataUrl);
+})
+	jQuery('.main-modal__trash').click(function(){
+	let title = jQuery(this).attr('data-name');
+	let id = jQuery(this).attr('id');
+	let dataCat = jQuery(this).attr('data-id-cat');
+	let modalTitle = jQuery('.modal-trash__title-span').text(title)
+	let inputHidden = jQuery('.main-button__trash').attr('data-id',id);
+    let inputDataCat = jQuery('.main-button__trash').attr('data-id-cat',dataCat);
+})
+	
+	var items = new Array;
+	jQuery('table tbody tr').each(function(){
+		var optionTable = jQuery(this).attr('data-id');
+		items.push(optionTable);
+	})
+
+	jQuery('#field_fsfpd option').each(function(){
+		var optionSelect = jQuery(this).val();
+		if(jQuery.inArray(optionSelect, items) >= 0 ){
+			jQuery(this).prop('disabled', 'disabled');
+		}
+		
+	})
+	
+	jQuery(function($){
+
+    // craer formularios
+    
+        $( ".main-button__trash").click(function( event ) {
+            event.preventDefault();
+			$(this).addClass('disabled-button')
+			$(this).text('Eliminando...')
+            //url de enpoint
+            let url = '<?php echo admin_url( 'admin-ajax.php' ); ?>'
+            let id = $(this).attr('data-id');
+			let idCat = $(this).attr('data-id-cat');
+			
+    
+            //data enviada al endpoint
+            let data = {
+				'id_cat'		 : idCat,
+                'id'			 : id,
+                'restNonce'		 : '<?php wp_create_nonce( 'my-ajax-nonce' ); ?>',
+				'action'		 : 'my_trash'
+            };
+    
+           console.log(data);
+			jQuery.post(url, data, function(response) {
+    ;
+                if(response['status'] != null){
+					$(`#${response['id_cat']}`).remove();
+					$('.modal-trash__title').text('Se ha eliminado correctamente')
+					$('.main-button__trash').remove();
+					$('.open-modal__btnsa').text('Ok');
+				
+					setTimeout(function(){
+                    jQuery(location).prop('href', '/sistemaurbis/marketing-landing-page/')
+                }, 1000)
+				}
+            });
+    
+        });
+		
+    });
+	
+	
+	// update
+	jQuery(function($){
+
+    // craer formularios
+    
+        $( ".main-button__update").click(function( event ) {
+            event.preventDefault();
+			$(this).addClass('disabled-button')
+			$(this).text('Actualizando...')
+            //url de enpoint
+            let url = '<?php echo admin_url( 'admin-ajax.php' ); ?>'
+            let id = $(this).attr('data-id');
+			let idUrl = $('#updateInput').val();
+			
+    
+            //data enviada al endpoint
+            let data = {
+				'id_url'		 : idUrl,
+                'id'			 : id,
+                'restNonce'		 : '<?php wp_create_nonce( 'my-ajax-nonce' ); ?>',
+				'action'		 : 'my_update'
+            };
+    
+           console.log(data);
+			jQuery.post(url, data, function(response) {
+    ;
+				console.log(response)
+                if(response['status'] > 0){
+					
+					$('.modal-edict__title').text('Se ha actualizado correctamente')
+					$('.main-button__update').text('Ok');
+					$('#updateInput').remove();
+					setTimeout(function(){
+                    jQuery(location).prop('href', '/sistemaurbis/marketing-landing-page/')
+                }, 1000)
+				}
+            });
+    
+        });
+		
+    });
+	
+
+	
+</script>
+<?php
+}
+
+add_action('wp_footer', 'my_excerpt');
+function my_excerpt(){
+	$url = !empty(get_the_excerpt()) ? get_the_excerpt() : '';
+	?>
+<script>
+	var url = '<?php echo $url; ?>';
+	if(url !== ''){
+		jQuery('.assign-url-btn').each(function(){
+			jQuery(this).find('a').attr('href', url);
+		})
+	}
+	
+</script>
+<?php
+	
+}
+
+//* NO incluyas la etiqueta de apertura
+ 
+//* Enlace del menú "cerrar sesión"
+
+add_filter( 'wp_nav_menu_objects', 'my_dynamic_menu_items' );
+
+function my_dynamic_menu_items( $menu_items ) {
+  $final_menu = [];
+    foreach ( $menu_items as $menu_item ) {
+        if ( '#salir#' == $menu_item->title ) {
+					$menu_item->title = "Cerrar sesión";
+					$menu_item->url = wp_logout_url( home_url() );
+					$final_menu[] = $menu_item;
+        }
+				else {
+          $final_menu[] = $menu_item;
+        }
+    }
+    return $final_menu;
+}
+
+add_action('template_redirect', 'redirect_g_to');
+
+function redirect_g_to(){
+
+	if(!is_user_logged_in()){
+		return false;
+	};
+	$validate = [
+		'expired',
+		'cancelled',
+	];
+	//var_dump(redirect_payment_pendding());
+	if( redirect_payment_pendding() == 'pending' && !is_page('home') && !is_page('pago-pendiente')){
+
+		wp_redirect( "/sistemaurbis/pago-pendiente/", 301 );
+		exit();
+
+	}else if(in_array(redirect_payment_pendding(), $validate, true) && !is_page('home') && !is_page('pagar-membresias')){
+
+		wp_redirect( "/sistemaurbis/pagar-membresias/", 301 );
+		exit();
+
+	}else if(is_page('home') && !current_user_can('administrator') && redirect_payment_pendding() == 'active'){
+
+	 	wp_redirect( "/sistemaurbis/", 301 );
+	 	exit();
+
+	 }	
+
+}
+
+ function redirect_payment_pendding(){
+
+ 	if(!is_user_logged_in()){
+ 		return false;
+ 	}
+
+ 	global $wpdb;
+
+ 	$table = $wpdb->prefix . 'rcp_memberships';
+
+	
+
+ 	$id = get_current_user_id();
+
+ 	$sql = "SELECT $table.`status` FROM $table WHERE $table.`user_id` = $id";
+
+ 	$query = $wpdb->prepare( $sql );
+
+ 	$result = $wpdb->get_results( $query );
+	
+ 	$status = !empty($result[count($result)-1]->status)? $result[count($result)-1]->status : false;
+ 	return $status;
+ }

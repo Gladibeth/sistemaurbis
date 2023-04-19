@@ -2,17 +2,17 @@
 /**
  * Plugin Name: Frontend Reset Password
  * Description: Let your users reset their forgotten passwords from the frontend of your website.
- * Version: 1.2
- * Author: Square One Media
- * Author URI: https://squareonemedia.co.uk
+ * Version: 1.2.1
+ * Author: WP Enhanced
+ * Author URI: https://wpenhanced.com
  * Requires at least: 4.4
- * Tested up to: 5.4.2
+ * Tested up to: 6.1
  *
  * Text Domain: frontend-reset-password
  * Domain Path: /i18n/languages
  *
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VAYF6G99MCMHU
+ * Donate link: https://www.paypal.com/donate/?hosted_button_id=VAYF6G99MCMHU
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

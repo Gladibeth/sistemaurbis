@@ -58,7 +58,7 @@ class Directory extends Abstract_Summary_Page implements Interface_Page {
 			array(
 				'utm_source'   => 'smush',
 				'utm_medium'   => 'plugin',
-				'utm_campaign' => 'smush_directorysmush_limit_notice',
+				'utm_campaign' => 'smush_directory_smush_paused_50_limit',
 			),
 			$this->upgrade_url
 		);

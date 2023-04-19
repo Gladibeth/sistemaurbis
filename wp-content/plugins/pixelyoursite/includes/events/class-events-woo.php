@@ -93,6 +93,7 @@ class EventsWoo extends EventsFactory {
             global $post;
             $data = array(
                 'enabled'                       => true,
+                'enabled_save_data_to_orders'  => PYS()->getOption('woo_enabled_save_data_to_orders'),
                 'addToCartOnButtonEnabled'      => PYS()->getOption( 'woo_add_to_cart_enabled' ) && PYS()->getOption( 'woo_add_to_cart_on_button_click' ),
                 'addToCartOnButtonValueEnabled' => PYS()->getOption( 'woo_add_to_cart_value_enabled' ),
                 'addToCartOnButtonValueOption'  => PYS()->getOption( 'woo_add_to_cart_value_option' ),
@@ -198,8 +199,11 @@ class EventsWoo extends EventsFactory {
                 $events = array();
                 $order_key = sanitize_key($_REQUEST['key']);
                 $order_id = (int) wc_get_order_id_by_order_key( $order_key );
-
-                update_post_meta( $order_id, '_pys_purchase_event_fired', true );
+                $order = wc_get_order($order_id);
+                if($order) {
+                    $order->update_meta_data("_pys_purchase_event_fired",true);
+                    $order->save();
+                }
                 $events[] = new SingleEvent($event,EventTypes::$STATIC,'woo');
 
                 // add child event complete_registration

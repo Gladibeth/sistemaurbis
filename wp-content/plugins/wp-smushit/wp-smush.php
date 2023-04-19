@@ -13,7 +13,7 @@
  * Plugin Name:       Smush
  * Plugin URI:        http://wordpress.org/plugins/wp-smushit/
  * Description:       Reduce image file sizes, improve performance and boost your SEO using the free <a href="https://wpmudev.com/">WPMU DEV</a> WordPress Smush API.
- * Version:           3.10.3
+ * Version:           3.12.6
  * Author:            WPMU DEV
  * Author URI:        https://profiles.wordpress.org/wpmudev/
  * License:           GPLv2
@@ -48,7 +48,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 if ( ! defined( 'WP_SMUSH_VERSION' ) ) {
-	define( 'WP_SMUSH_VERSION', '3.10.3' );
+	define( 'WP_SMUSH_VERSION', '3.12.6' );
 }
 // Used to define body class.
 if ( ! defined( 'WP_SHARED_UI_VERSION' ) ) {
@@ -77,6 +77,18 @@ if ( ! defined( 'WP_SMUSH_PREMIUM_MAX_BYTES' ) ) {
 }
 if ( ! defined( 'WP_SMUSH_TIMEOUT' ) ) {
 	define( 'WP_SMUSH_TIMEOUT', 150 );
+}
+if ( ! defined( 'WP_SMUSH_RETRY_ATTEMPTS' ) ) {
+	define( 'WP_SMUSH_RETRY_ATTEMPTS', 3 );
+}
+if ( ! defined( 'WP_SMUSH_RETRY_WAIT' ) ) {
+	define( 'WP_SMUSH_RETRY_WAIT', 1 );
+}
+if ( ! defined( 'WP_SMUSH_PARALLEL' ) ) {
+	define( 'WP_SMUSH_PARALLEL', true );
+}
+if ( ! defined( 'WP_SMUSH_BACKGROUND' ) ) {
+	define( 'WP_SMUSH_BACKGROUND', true );
 }
 
 /**
@@ -205,6 +217,11 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		private function __construct() {
 			spl_autoload_register( array( $this, 'autoload' ) );
 
+			/**
+			 * Include vendor dependencies
+			 */
+			require_once __DIR__ . '/vendor/autoload.php';
+
 			add_action( 'admin_init', array( '\\Smush\\Core\\Installer', 'upgrade_settings' ) );
 			add_action( 'current_screen', array( '\\Smush\\Core\\Installer', 'maybe_create_table' ) );
 			add_action( 'admin_init', array( $this, 'register_free_modules' ) );
@@ -266,6 +283,9 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 			} catch ( Exception $e ) {
 				$this->api = '';
 			}
+
+			// Handle failed items, load it before validate the install.
+			new Smush\Core\Error_Handler();
 
 			$this->validate_install();
 
@@ -333,6 +353,33 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 		 */
 		public static function is_pro() {
 			return self::$is_pro;
+		}
+
+		public static function is_expired() {
+			$used_wpmudev_dashboard = class_exists( '\WPMUDEV_Dashboard' ) || defined( 'WPMUDEV_APIKEY') && WPMUDEV_APIKEY;
+			return $used_wpmudev_dashboard && ! self::is_pro();
+		}
+
+		public static function is_new_user() {
+			return ! self::is_pro() && ! self::is_expired();
+		}
+
+		/**
+		 * Verify the site is connected to TFH.
+		 *
+		 * @since 3.12.0
+		 *
+		 * @return boolean
+		 */
+		public static function is_site_connected_to_tfh() {
+			return isset( $_SERVER['WPMUDEV_HOSTED'] )
+				&& class_exists( '\WPMUDEV_Dashboard' ) && is_object( \WPMUDEV_Dashboard::$api )
+				&& method_exists( \WPMUDEV_Dashboard::$api, 'get_membership_status' )
+				&& 'free' === \WPMUDEV_Dashboard::$api->get_membership_status();
+		}
+
+		public static function is_member() {
+			return self::is_pro() || self::is_site_connected_to_tfh();
 		}
 
 		/**
@@ -433,7 +480,7 @@ if ( ! class_exists( 'WP_Smush' ) ) {
 			$api_auth = get_site_option( 'wp_smush_api_auth' );
 
 			// Check if we need to revalidate.
-			if ( ! $api_auth || empty( $api_auth ) || ! is_array( $api_auth ) || empty( $api_auth[ $api_key ] ) ) {
+			if ( empty( $api_auth[ $api_key ] ) ) {
 				$api_auth   = array();
 				$revalidate = true;
 			} else {

@@ -8,6 +8,7 @@ if ( ! isset( $saving ) ) {
 
 	if ( ! empty( $css ) ) {
 		echo strip_tags( $css, 'all' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		FrmStylesController::maybe_hide_sample_form_error_message();
 		die();
 	}
 }
@@ -328,6 +329,7 @@ legend.frm_hidden{
 
 .with_frm_style .wp-editor-container textarea{
 	border:none<?php echo esc_html( $important ); ?>;
+	box-shadow:none !important;
 }
 
 .with_frm_style .mceIframeContainer{
@@ -339,6 +341,7 @@ legend.frm_hidden{
 	width:<?php echo esc_html( $defaults['auto_width'] ); ?>;
 	width:var(--auto-width)<?php echo esc_html( $important ); ?>;
 	max-width:100%;
+	background-position-y: center;
 }
 
 .with_frm_style input[disabled],
@@ -442,8 +445,8 @@ legend.frm_hidden{
 /* Floating labels */
 .with_frm_style .frm_inside_container {
 	position: relative;
-	padding-top: 27px;
-	padding-top: calc(0.85 * var(--field-height));
+	padding-top: 16px;
+	padding-top: calc(0.5 * var(--field-height));
 }
 
 .with_frm_style .frm_inside_container > input,
@@ -475,8 +478,8 @@ legend.frm_hidden{
 	transition: all 0.3s ease-in;
 
 	position: absolute;
-	top: 28px;
-	top: calc(1px + 0.85 * var(--field-height));
+	top: 17px;
+	top: calc(1px + .5 * var(--field-height));
 	left: 3px;
 	width: 100%;
 
@@ -504,6 +507,7 @@ legend.frm_hidden{
 .with_frm_style .frm_inside_container.frm_label_float_top > label {
 	top: 0;
 	left: 0;
+	padding: 0;
 	font-size: 12px;
 	font-size: calc(0.85 * var(--field-font-size));
 }
@@ -526,8 +530,10 @@ legend.frm_hidden{
 	opacity: 1;
 	transition: opacity 0.3s ease-in;
 }
+/* End floating label */
 
-.with_frm_style .frm_description{
+.with_frm_style .frm_description,
+.with_frm_style .frm_pro_max_limit_desc{
 	clear:both;
 }
 
@@ -1222,7 +1228,10 @@ select.frm_loading_lookup{
 
 .frm_grid .frm_error,
 .frm_grid_first .frm_error,
-.frm_grid_odd .frm_error{
+.frm_grid_odd .frm_error,
+.frm_grid .frm_limit_error,
+.frm_grid_first .frm_limit_error,
+.frm_grid_odd .frm_limit_error{
 	display:none;
 }
 
@@ -1563,9 +1572,18 @@ select.frm_loading_lookup{
 	margin-bottom: 0 !important;
 }
 
-/* Fonts */
-<?php readfile( FrmAppHelper::plugin_path() . '/css/font_icons.css' ); ?>
-<?php do_action( 'frm_include_front_css', compact( 'defaults' ) ); ?>
+<?php
+FrmStylesHelper::maybe_include_font_icon_css();
+
+/**
+ * Call action so other plugins can add additional CSS.
+ *
+ * @param array $args {
+ *     @type array $defaults
+ * }
+ */
+do_action( 'frm_include_front_css', compact( 'defaults' ) );
+?>
 
 /* Responsive */
 
@@ -1622,4 +1640,4 @@ select.frm_loading_lookup{
 }
 <?php
 
-echo strip_tags( $defaults['custom_css'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+echo strip_tags( FrmStylesController::get_custom_css() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

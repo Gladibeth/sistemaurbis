@@ -14,9 +14,8 @@ class FrmApplicationsController {
 	 * @return void
 	 */
 	public static function menu() {
-		$label    = __( 'Applications', 'formidable' );
-		$new_pill = '<span class="frm-new-pill">NEW</span>';
-		$cap      = self::get_required_capability();
+		$label = __( 'Applications', 'formidable' );
+		$cap   = self::get_required_capability();
 
 		if ( ! current_user_can( $cap ) && is_callable( 'FrmProApplicationsHelper::get_custom_applications_capability' ) ) {
 			$custom_applications_cap = FrmProApplicationsHelper::get_custom_applications_capability();
@@ -32,7 +31,7 @@ class FrmApplicationsController {
 			$callback = array( __CLASS__, 'landing_page' );
 		}
 
-		add_submenu_page( 'formidable', 'Formidable | ' . $label, $label . $new_pill, $cap, $slug, $callback );
+		add_submenu_page( 'formidable', 'Formidable | ' . $label, $label, $cap, $slug, $callback );
 	}
 
 	/**
@@ -73,6 +72,9 @@ class FrmApplicationsController {
 	 * @return void
 	 */
 	public static function get_applications_data() {
+		FrmAppHelper::permission_check( 'frm_view_forms' );
+		check_ajax_referer( 'frm_ajax', 'nonce' );
+
 		$view = FrmAppHelper::get_param( 'view', '', 'get', 'sanitize_text_field' );
 		$data = array();
 
@@ -171,6 +173,7 @@ class FrmApplicationsController {
 
 		$js_dependencies = array(
 			'wp-i18n',
+			'wp-hooks', // This prevents a console error "wp.hooks is undefined" in WP versions older than 5.7.
 			'formidable_dom',
 		);
 		wp_register_script( 'formidable_applications', $plugin_url . '/js/admin/applications.js', $js_dependencies, $version, true );

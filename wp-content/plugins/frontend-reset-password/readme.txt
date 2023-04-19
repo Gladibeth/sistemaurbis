@@ -1,9 +1,9 @@
 === Frontend Reset Password ===
-Contributors: squareonemedia, rwebster85
+Contributors: wpenhanced, rwebster85
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VAYF6G99MCMHU
-Author URI: https://squareonemedia.co.uk
+Author URI: https://wpenhanced.com
 Requires at Least: 4.4
-Tested up to: 5.4.2
+Tested up to: 6.1
 Stable tag: trunk
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -79,6 +79,10 @@ You can customise **Frontend Reset Password** on the Plugins, Frontend Reset Pas
 2. Enter New Password Form (Twenty Seventeen Theme)
 
 == Changelog ==
+
+= 1.2.1 - 8th November 2022 =
+* MOD: Updated branding to match WP Enhanced
+* MOD: Updated "tested up to" so its not out of date anymore
 
 = 1.2 - 13th July 2020 =
 * [New Feature] Setting to change the email subject.

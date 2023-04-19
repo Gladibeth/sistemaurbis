@@ -3,8 +3,8 @@ Contributors: WPEverest
 Tags: user registration, registration, user profile, registration form, login form,
 Requires at least: 4.0
 Requires PHP: 5.3
-Tested up to: 6.0.1
-Stable tag: 2.2.1
+Tested up to: 6.1.1
+Stable tag: 2.3.3.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -61,7 +61,7 @@ The best thing is that there are unlimited customization options for each field 
 
 * **[Premium] [Connect Registration Forms with 1000+ Services via Zapier:](https://wpeverest.com/wordpress-plugins/user-registration/zapier/?utm_source=wporg&utm_medium=link&utm_campaign=ur-upgrade-to-pro)** Zapier passes information to all the applications your registration forms are connected with. This helps you save time by automating tasks like collecting form responses, sending texts and reminders.
 
-* **[Premium] Integrations with Email Marketing Services:** Promote your business with the correct email marketing tools like [MailChimp](https://wpeverest.com/wordpress-plugins/user-registration/mailchimp/?utm_source=wporg&utm_medium=link&utm_campaign=ur-upgrade-to-pro) and [MailerLite](https://wpeverest.com/wordpress-plugins/user-registration/mailerlite/?utm_source=wporg&utm_medium=link&utm_campaign=ur-upgrade-to-pro). Integrating them with User Registration adds all your registered users to subscriber lists directly.
+* **[Premium] Integrations with Email Marketing Services:** Promote your business with the correct email marketing tools like [MailChimp](https://wpeverest.com/wordpress-plugins/user-registration/mailchimp/?utm_source=wporg&utm_medium=link&utm_campaign=ur-upgrade-to-pro) , [MailerLite](https://wpeverest.com/wordpress-plugins/user-registration/mailerlite/?utm_source=wporg&utm_medium=link&utm_campaign=ur-upgrade-to-pro) and [Active Campaign](https://wpeverest.com/wordpress-plugins/user-registration/activecampaign/?utm_source=wporg&utm_medium=link&utm_campaign=ur-upgrade-to-pro). Integrating them with User Registration adds all your registered users to subscriber lists directly.
 
 * **[Premium] [Drag and Drop Multi File Upload:](https://wpeverest.com/wordpress-plugins/user-registration/file-upload/?utm_source=wporg&utm_medium=link&utm_campaign=ur-upgrade-to-pro)** The multiple file upload feature is perfect for when you need to collect more than one document or image file. You only have to set the maximum file upload limit from the field options.
 
@@ -120,6 +120,8 @@ Here’s a brief look at the features that make User Registration one of the bes
 * **[Premium] [Front-end Listing:](https://wpeverest.com/wordpress-plugins/user-registration/frontend-listing/?utm_source=wporg&utm_medium=link&utm_campaign=ur-upgrade-to-pro)** If you want to display all your registered users on your website, the Front-end Listing addon is your answer. Users and guests alike can view individual profiles of your users from this front-end list.
 
 * **[Premium] [Customize My Account:](https://wpeverest.com/wordpress-plugins/user-registration/customize-my-account/?utm_source=wporg&utm_medium=link&utm_campaign=ur-upgrade-to-pro)** Manage the in-built My Account page by adding custom tabs as well as editing and deleting default tabs. User Registration also allows you to edit design elements of the page such as Color, Buttons, Navigation, and more.
+
+* **[Premium] [Two Factor Authentication:](https://wpeverest.com/wordpress-plugins/user-registration/two-factor-authentication/?utm_source=wporg&utm_medium=link&utm_campaign=ur-upgrade-to-pro)** If you want to protect your website from lousy hackers and digital vulnerabilities, the Two Factor Authentication add-on, also known as 2FA, will provide OTP-based verification for the users for maintaining a secure site and preventing data breaching.
 
 ### Who is User Registration for?
 * Schools and Universities
@@ -276,6 +278,162 @@ Yes, the plugin has a shortcode for the login form.
 16. User Account Page -  Vertical Layout
 
 == Changelog ==
+
+= 2.3.3.1    - 17/03/2023
+* Fix        - Email confirmation email not sent to user.
+
+= 2.3.3    - 16/03/2023
+* Refactor - Backend validation for form data.
+* Enhance  - Global settings input validation.
+* Enhance  - Confirm password and confirm email field validation.
+* Tweak    - Add Docs link in My Account select notice.
+* Tweak    - Add action hook added for email address change confirmation success.
+* Fix      - Required icon not displaying properly.
+* Fix      - Default value for country field not working.
+* Fix      - Strip Unwanted fields from conditional rules.
+* Fix      - Profile picture required issue in edit profile.
+* Fix      - Year not displayed on min max date field option.
+* Fix      - First item being selected by default in edit profile.
+* Fix      - Single item field error message displaying in wrong place.
+* Fix      - reCAPTCHA registration form template don't create reCAPTCHA.
+* Fix      - Role based redirect after logout not working for custom template.
+* Fix      - Email not send to user when login option set except email confirmation.
+* Fix      - Security issue send test email by non privileged user.
+* Fix      - Security issue PHP Object injection with unserialize PHP core function.
+
+
+= 2.3.2.1  - 23/02/2023
+* Fix 	   - Consent notice is now dismissable.
+* Fix      - Form preview not working properly when astra theme activated.
+* Fix      - Error while submitting form with file upload field when OpenSSL extension disabled.
+
+= 2.3.2    - 20/02/2023
+* Feature  - Shortcode for 'Change Password' Page.
+* Feature  - Email confirmation for email change on the edit profile page.
+* Refactor - Profile Picture save after profile update.
+* Enhance  - Setup wizard options and design.
+* Enhance  - Bulk form import/export.
+* Enhance  - Add {{user_roles}} smart tag.
+* Enhance  - View form link after importing form.
+* Enhance  - Fetch Form templates from remote server.
+* Enhance  - Send success email after email confirmation done by user.
+* Enhance  - Add toggle to enable/disable email from email list in global settings.
+* Dev      - Common code for Select2.
+* Dev      - Common js for preview password icon.
+* Dev      - Return login url from ur_get_my_account_url function if My Account is not set.
+* Tweak    - Deactivation popup.
+* Tweak    - Add Private notes in extension page.
+* Tweak    - Field option made clickable when no any field is selected.
+* Fix      - TinyMce data not saving issue.
+* Fix      - Smart tag in email issue for file type.
+* Fix      - Field Visibility Setting value not saving in safari.
+* Fix      - MyAccount redirection issue on plain permalink structure.
+* Fix      - Reset and incorrect password message appears at same time.
+* Fix 	   - Preview password icon not working when reCAPTCHA is enabled.
+
+= 2.3.1    - 17/01/2023
+* Enhance  - Fetch Form templates from remote server.
+* Fix 	   - XSS vulnerability in field settings.
+* Fix 	   - Flatpickr throwing an error in console,
+* Fix 	   - LearnDash slug typo in extemsions page.
+* Fix      - Disallow Reset Password for not approved users.
+* Fix 	   - Profile picture being removed while updating profile.
+* Fix      - Invalid argument warning while fetching form settings.
+* Fix      - Registration form id with which user is registered referenced in edit profile form.
+
+= 2.3.0    - 02/01/2023
+* Feature  - CAPTCHA verification on lost password page.​
+* Dev      - Add hook to hold success message before redirect.
+* Dev      - Add functions to get login and my account page urls.
+* Tweak    - New addons in extensions page.​
+* Tweak    - Delete popup modal layout size changes.​
+* Tweak    - Add UR tag for selected my account page.​
+* Tweak    - Collapse accordion by default except general in form builder. ​
+* Tweak    - Submit Button Class, Text, Form Class label and tooltip text changes.​
+* Fix      - PHP 8.1 Compatibility issue​s.
+* Fix      - Forms table sorting by latest update.​
+* Fix      - Form Id empty issue in getting started page.​
+* Fix      - Misplaced error message for url fields.​
+* Fix      - Field not appended in the droppable zone.​
+* Fix      - Errors and warnings in the browser console.​
+* Fix      - Show Password icon for Extra Password field.​
+* Fix      - Smart tag for country field in email content.
+* Fix      – My Account endpoint translation issue in WPML.​
+* Fix      - Gutenberg compatibility issue with my account.
+* Fix      - User export issue when form name has special characters.​
+* Fix      - User export issue while checkbox or multi-select2 exists.​
+* Fix      - Form not submitting issue while captcha keys are not set.​
+* Fix      - Form submitting when error message exists for file upload.
+* Fix      – Special Character in Password Field caused invalid password while login.​
+* Fix      - 'Special Character Validation in Username' and 'Unknown Email' messages not customized properly.​
+
+= 2.2.6    - 01/12/2022
+* Fix      - Critical error while updating user details by admin.
+* Fix      - Form export issue when the form name has special characters.
+* Fix      - Getting Started Page now works properly in local environment.
+* Fix      - User profile picture design issue in dashboard of my account page.
+* Fix      - Convert email verification plain text to link in the confirmation email.
+* Fix      - My Account selection notice keep appearing when group block enabled in the page.
+* Dev      - UR Logger function called incorrectly.
+* Tweak    - Renamed hCaptcha according to brand name.​
+
+= 2.2.5    - 22/11/2022
+* Fix      - User Registration string translation issue.
+* Fix      - Auto approving users even when admin approval was enabled.
+* Fix      - Default role set to administrator after getting started end.
+* Fix      - Critical error while approving or updating user details by admin.
+* Fix      - Replace str_contains with strpos for compatibility below php version 8.
+* Fix      - Upgrade plan button in extensions page even when license was activated.
+* Dev      - Added trigger before redirect to another page after registration in JS.
+
+= 2.2.4.1  - 14/11/2022
+* Fix      - Security issue in profile picture upload.
+* Tweak    - Parse user extra information according to form fields order.
+
+= 2.2.4    - 10/11/2022
+* Feature  - Form Templates.
+* Enhance  - Support links on the checkbox field option.
+* Dev      - Stripe Addon Refactor Compatibility.
+* Dev      - Two Factor Authentication Addon Compatibility.
+* Tweak    - Add page state for user registration my account page.
+* Fix      - Localize reCAPTCHA script conditionally.
+* Fix      - Date not fetched in proper format in admin edit profile.
+* Fix      - Undefined index version while entering and activating license.
+* Fix      - Disable Default WordPress Login Screen not working on custom login page.
+* Fix      - WooCommerce password strength meter conflicting with reset password page.
+
+= 2.2.3    - 27/09/2022
+* Enhance  - Delete forms when plugin uninstalled. ​
+* Tweak    - Install pages notice when onboarding skipped​.
+* Tweak    - Display notice to select my account page in settings.​
+* Tweak    - Change text typo and grammatical mistake in settings labels.​
+* Dev      - Function to get all form fields added.​
+* Dev      - Trigger added for field removal in JS.​
+* Dev      - Trigger added for handling field error messages.​
+* Fix      - Number field accepting text inputs.​
+* Fix      - Tooltip not properly displayed in form settings.​
+* Fix      - My Account vertical layout nav width responsiveness.​
+* Fix      - Required field issue in edit profile when field is conditionally hidden.​
+* Fix      - One time draggable fields inside a row not reinitialized after deleting it.​
+* Fix      - User with email confirmed but not approved by admin are not shown as pending in users table.
+
+= 2.2.2    - 06/09/2022
+* Enhance  - Parse smart tag values in appropriate format to display​.
+* Refactor - Remove field icon code.​
+* Refactor - Replace jQuery tiptip with Tooltipster for tooltip​.
+* Tweak    - Double quoted main font family ignored by browsers.​
+* Tweak    - Replace incremental file name function with WordPress default.​
+* Tweak    - Revert content overrider not saving code back to old working one.​
+* Tweak    - Settings option label made consistent​.
+* Fix 	   - Flatpickr localization issue.
+* Fix 	   - File type valid value format.​
+* Fix 	   - Select All option translation issue.​
+* Fix 	   - Conditional Logic enabled required field issue. ​
+* Fix 	   - Invalid argument error in foreach when updating pro.​
+* Fix 	   - Redirection after registration not working with block.​
+* Fix 	   - Error thrown when uploaded file is not found in upload directory.​
+* Fix      - Ajax Submission not working in edit profile when required field empty.
+* Fix 	   - Lost password not working when no default account page with forgot password endpoint​.
 
 = 2.2.1    - 28/07/2022
 * Enhance  - Display Keyboard Shortcuts Popup when (Ctrl + H) is pressed.

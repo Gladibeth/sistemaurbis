@@ -7,7 +7,7 @@ class FrmForm {
 
 	/**
 	 * @param array $values
-	 * @return int|boolean id on success or false on failure
+	 * @return int|bool id on success or false on failure.
 	 */
 	public static function create( $values ) {
 		global $wpdb;
@@ -382,15 +382,38 @@ class FrmForm {
 		return $values;
 	}
 
+	/**
+	 * @param string $opt
+	 * @param mixed  $value
+	 * @return void
+	 */
 	private static function sanitize_field_opt( $opt, &$value ) {
-		if ( is_string( $value ) ) {
-			if ( $opt === 'calc' ) {
-				$value = self::sanitize_calc( $value );
-			} else {
-				$value = FrmAppHelper::kses( $value, 'all' );
-			}
-			$value = trim( $value );
+		if ( ! is_string( $value ) ) {
+			return;
 		}
+
+		/**
+		 * Allow the option to turn off sanitization for a field. This way a custom rule can be used instead.
+		 * Make sure to add custom sanitization using the frm_update_field_options filter as the data will no longer be sanitized.
+		 *
+		 * @since 6.0
+		 *
+		 * @param bool   $should_sanitize
+		 * @param string $opt
+		 */
+		$should_sanitize = apply_filters( 'frm_should_sanitize_field_opt_string', true, $opt );
+
+		if ( ! $should_sanitize ) {
+			return;
+		}
+
+		if ( $opt === 'calc' ) {
+			$value = self::sanitize_calc( $value );
+		} else {
+			$value = FrmAppHelper::kses( $value, 'all' );
+		}
+
+		$value = trim( $value );
 	}
 
 	/**
@@ -727,7 +750,7 @@ class FrmForm {
 					FrmAppHelper::unserialize_or_decode( $cache->options );
 				}
 
-				return wp_unslash( $cache );
+				return apply_filters( 'frm_form_object', wp_unslash( $cache ) );
 			}
 		}
 
@@ -785,7 +808,11 @@ class FrmForm {
 	 * Get all published forms
 	 *
 	 * @since 2.0
-	 * @return array of forms
+	 *
+	 * @param array  $query
+	 * @param int    $limit
+	 * @param string $inc_children
+	 * @return array|object of forms A single form object would be passed if $limit was set to 1.
 	 */
 	public static function get_published_forms( $query = array(), $limit = 999, $inc_children = 'exclude' ) {
 		$query['is_template'] = 0;
@@ -1087,22 +1114,38 @@ class FrmForm {
 	}
 
 	/**
-	 * @deprecated 3.0
-	 * @codeCoverageIgnore
+	 * Check if the "Submit this form with AJAX" setting is toggled on.
 	 *
-	 * @param string $key
+	 * @since 6.2
 	 *
-	 * @return int form id
+	 * @param stdClass $form
+	 * @return bool
 	 */
-	public static function getIdByKey( $key ) {
-		return FrmFormDeprecated::getIdByKey( $key );
+	public static function is_ajax_on( $form ) {
+		return ! empty( $form->options['ajax_submit'] );
 	}
 
 	/**
-	 * @deprecated 3.0
+	 * @deprecated 2.03.05 This is still referenced in a few add ons (API, locations).
 	 * @codeCoverageIgnore
+	 *
+	 * @param string $key
+	 * @return int form id
+	 */
+	public static function getIdByKey( $key ) {
+		_deprecated_function( __FUNCTION__, '2.03.05', 'FrmForm::get_id_by_key' );
+		return self::get_id_by_key( $key );
+	}
+
+	/**
+	 * @deprecated 2.03.05 This is still referenced in the API add on as of v1.13.
+	 * @codeCoverageIgnore
+	 *
+	 * @param string|int $id
+	 * @return string
 	 */
 	public static function getKeyById( $id ) {
-		return FrmFormDeprecated::getKeyById( $id );
+		_deprecated_function( __FUNCTION__, '2.03.05', 'FrmForm::get_key_by_id' );
+		return self::get_key_by_id( $id );
 	}
 }

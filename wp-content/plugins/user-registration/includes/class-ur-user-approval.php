@@ -226,8 +226,7 @@ class UR_User_Approval {
 							$url .= $_SERVER['REQUEST_URI']; //phpcs:ignore
 						}
 						$url      = substr( $url, 0, strpos( $url, '?' ) );
-						$instance = new UR_Email_Confirmation();
-						$url      = wp_nonce_url( $url . '?ur_resend_id=' . $instance->crypt_the_string( $user->ID . '_' . time(), 'e' ) . '&ur_resend_token=true', 'ur_resend_token' );
+						$url      = wp_nonce_url( $url . '?ur_resend_id=' . crypt_the_string( $user->ID . '_' . time(), 'e' ) . '&ur_resend_token=true', 'ur_resend_token' );
 						/* translators: %s - Resend Verification Link. */
 						$message = '<strong>' . esc_html__( 'ERROR:', 'user-registration' ) . '</strong> ' . sprintf( __( 'Your account is still pending approval. Verify your email by clicking on the link sent to your email. %s', 'user-registration' ), '<a id="resend-email" href="' . esc_url( $url ) . '">' . __( 'Resend Verification Link', 'user-registration' ) . '</a>' );
 						return new WP_Error( 'user_email_not_verified', $message );
@@ -251,8 +250,7 @@ class UR_User_Approval {
 			}
 
 			$url      = substr( $url, 0, strpos( $url, '?' ) );
-			$instance = new UR_Email_Confirmation();
-			$url      = wp_nonce_url( $url . '?ur_resend_id=' . $instance->crypt_the_string( $user->ID . '_' . time(), 'e' ) . '&ur_resend_token=true', 'ur_resend_token' );
+			$url      = wp_nonce_url( $url . '?ur_resend_id=' . crypt_the_string( $user->ID . '_' . time(), 'e' ) . '&ur_resend_token=true', 'ur_resend_token' );
 
 			if ( '0' === $status['user_status'] ) {
 				/* translators: %s - Resend Verification Link. */
@@ -264,6 +262,7 @@ class UR_User_Approval {
 			$payment_status = get_user_meta( $user->ID, 'ur_payment_status', true );
 
 			do_action( 'ur_user_before_check_payment_status_on_login', $payment_status, $user );
+			$message = apply_filters( 'ur_user_before_check_payment_status_on_login', $payment_status, $user );
 
 			if ( ! empty( $payment_status ) && 'completed' !== $payment_status ) {
 
@@ -356,18 +355,12 @@ class UR_User_Approval {
 	 */
 	public function allow_password_reset( $result, $user_id ) {
 
-		$form_id = ur_get_form_id_by_userid( $user_id );
+		$user_manager = new UR_Admin_User_Manager( $user_id );
 
-		// Check if the form is our form and the login option is admin approval.
-		if ( 0 !== $form_id && 'admin_approval' === ur_get_single_post_meta( $form_id, 'user_registration_form_setting_login_options', get_option( 'user_registration_general_setting_login_options', 'default' ) ) ) {
-			$user_manager = new UR_Admin_User_Manager( $user_id );
-
-			if ( ! $user_manager->is_approved() ) {
-				$error_message = __( 'Your account is still awaiting admin approval. Reset Password is not allowed.', 'user-registration' );
-				$result        = new WP_Error( 'user_not_approved', $error_message );
-			}
+		if ( ! $user_manager->is_approved() ) {
+			$error_message = __( 'Your account is still pending approval. Reset Password is not allowed.', 'user-registration' );
+			$result        = new WP_Error( 'user_not_approved', $error_message );
 		}
-
 		return $result;
 	}
 

@@ -115,6 +115,16 @@ function rcp_admin_scripts( $hook ) {
 				'rcp_dismissed_nonce' => wp_create_nonce( 'rcp_dismissed_nonce' ),
 		) );
 	}
+
+	// RCP Black Friday Notice Script Inclusion and Localization - Notice Dismissal
+	if ( ! get_option( 'dismissed-restrict-content-bfcm-notice', false ) ) {
+		wp_enqueue_script( 'restrict-content-pro-admin-notices', RCP_PLUGIN_URL . 'core/includes/js/restrict-content-pro-admin-notices.js', array( 'jquery' ), RCP_PLUGIN_VERSION );
+		wp_localize_script( 'restrict-content-pro-admin-notices', 'rcp_admin_notices_vars', array(
+				'rcp_dismissed_nonce' => wp_create_nonce( 'rcp_dismissed_nonce' ),
+		) );
+	}
+
+	
 }
 add_action( 'admin_enqueue_scripts', 'rcp_admin_scripts' );
 
@@ -179,6 +189,7 @@ function rcp_register_scripts() {
 	wp_register_script( 'rcp-register',  RCP_PLUGIN_URL . 'core/includes/js/register' . $suffix . '.js', array('jquery'), RCP_PLUGIN_VERSION );
 	wp_register_script( 'jquery-blockui',  RCP_PLUGIN_URL . 'core/includes/js/jquery.blockUI.js', array('jquery'), RCP_PLUGIN_VERSION );
 	wp_register_script( 'rcp-account', RCP_PLUGIN_URL . 'core/includes/js/account' . $suffix . '.js', array( 'jquery' ), RCP_PLUGIN_VERSION, true );
+	wp_register_script( 'rcp-general', RCP_PLUGIN_URL . 'core/includes/js/general.js', array(), RCP_PLUGIN_VERSION, true );
 
 	wp_localize_script( 'rcp-account', 'rcpAccountVars', array(
 		'confirmEnableAutoRenew'  => __( 'Are you sure you want to enable auto renew? You will automatically be charged on %s.', 'rcp' ),
@@ -271,6 +282,7 @@ function rcp_print_scripts() {
 	wp_print_scripts( 'es6-promise' );
 	wp_print_scripts( 'rcp-register' );
 	wp_print_scripts( 'jquery-blockui' );
+	wp_print_scripts( 'rcp-general' );
 	if ( rcp_is_recaptcha_enabled() ) {
 		wp_print_scripts( 'recaptcha-v' . rcp_get_recaptcha_version() );
 	}
@@ -330,6 +342,8 @@ function rcp_ajax_dismissed_notice_handler() {
 		if ( $_POST['name'] === 'rcp-plugin-migration-notice' ) {
 			update_option( 'dismissed-' . $_POST['name'], true );
 		} else if ( $_POST['name'] === 'restrict-content-upgrade-notice' ) {
+			update_option( 'dismissed-' . $_POST['name'], true );
+		} else if ( $_POST['name'] === 'restrict-content-bfcm-notice' ) {
 			update_option( 'dismissed-' . $_POST['name'], true );
 		}
 	}

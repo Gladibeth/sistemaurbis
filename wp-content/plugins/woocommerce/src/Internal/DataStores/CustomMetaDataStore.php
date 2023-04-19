@@ -78,6 +78,8 @@ abstract class CustomMetaDataStore {
 	 *
 	 * @param  WC_Data  $object WC_Data object.
 	 * @param  stdClass $meta (containing at least ->id).
+	 *
+	 * @return bool
 	 */
 	public function delete_meta( &$object, $meta ) {
 		global $wpdb;
@@ -101,10 +103,6 @@ abstract class CustomMetaDataStore {
 	 */
 	public function add_meta( &$object, $meta ) {
 		global $wpdb;
-
-		if ( ! is_a( $meta, 'WC_Meta_Data' ) ) {
-			return false;
-		}
 
 		$db_info = $this->get_db_info();
 
@@ -131,6 +129,8 @@ abstract class CustomMetaDataStore {
 	 *
 	 * @param  WC_Data  $object WC_Data object.
 	 * @param  stdClass $meta (containing ->id, ->key and ->value).
+	 *
+	 * @return bool
 	 */
 	public function update_meta( &$object, $meta ) {
 		global $wpdb;
@@ -194,5 +194,4 @@ abstract class CustomMetaDataStore {
 
 		return $meta;
 	}
-
 }

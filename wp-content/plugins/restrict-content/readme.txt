@@ -1,11 +1,12 @@
-=== WordPress Membership Plugin - Restrict Content ===
+=== Membership Plugin - Restrict Content ===
 Author URI: https://restrictcontentpro.com
 Author: StellarWP
-Contributors: ithemes, reedyseth, highprrrr, neillmcshea, layotte, jthillithemes
+Contributors: stellarwp, reedyseth, highprrrr
 Tags: restrict pages, restrict posts, restrict access, membership, registration form, access control
-Requires at least: 5.6
-Tested up to: 6.0.1
-Stable tag: 3.1.2
+Requires at least: 6.0
+Requires PHP: 7.4
+Tested up to: 6.2
+Stable tag: 3.1.9.1
 
 Restrict Content is a powerful WordPress membership plugin that gives you full control over who can and cannot view content on your WordPress site.
 
@@ -256,8 +257,42 @@ https://restrictcontentpro.com/tour/screenshots/
 
 == Changelog ==
 
+= 3.1.9.1 =
+* HotFix: Fatal Error Calling `RCP_Telemetry`. Action Hook added in constructor executed before the file was included.
+
+= 3.1.9 =
+* Enhancement: Replace Freemius third-party integration with our StellarWP Telemetry.
+* Enhancement: Add reCaptcha feature from Pro.
+* Enhancement: Add Add-Ons page.
+* Enhancement: Add Stripe webhooks option to include any missing webhook.
+* Update: Language domain in were using LION for rcp.
+* Fix: Replaces Divs with tables on the 'Register page' and 'Your Membership' page.
+* Fix: Gutenberg Block “Content Upgrade Redirect” that was missing.
+* Fix: Revert div for tables in registration pages.
+
+= 3.1.8 =
+* Fix: Sanitation issues in core files.
+* Fix: Fatal error cannot redeclare “rcp_should_show_discounts” when using multiple paid registration forms.
+* Enhancement: Update Stripe library to version 10.3.
+
+= 3.1.7 =
+* Fix: Email templates that were deleted when saving any RC setting.
+* Enhancement: Register templates and remove duplicated code.
+
+= 3.1.6 =
+* Add: Freemius integration to help Restrict Content Pro be a better plugin.
+
+= 3.1.5 =
+* Fix: Fixes to prevent usage of PHP Short tags.
+
+= 3.1.4 =
+* Fix: Compatibility with The Events Calendar and Pods.
+
+= 3.1.3 =
+* Fix: Styles from the registration button, the font size in the password hint text
+
 = 3.1.2 =
-* Fix:Registration form with missing labels.
+* Fix: Registration form with missing labels.
 * Enhancement: Styling of registration form for desktop and mobile.
 
 = 3.1.1 =

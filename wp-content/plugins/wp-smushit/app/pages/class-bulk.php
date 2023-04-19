@@ -33,6 +33,7 @@ class Bulk extends Abstract_Summary_Page implements Interface_Page {
 			// Reset transient.
 			Core::check_bulk_limit( true );
 			add_action( 'smush_setting_column_tag', array( $this, 'add_lossy_new_tag' ) );
+			add_action( 'smush_setting_column_tag', array( $this, 'add_pro_tag' ) );
 		}
 
 		add_action( 'smush_setting_column_right_inside', array( $this, 'settings_desc' ), 10, 2 );
@@ -41,6 +42,7 @@ class Bulk extends Abstract_Summary_Page implements Interface_Page {
 		add_action( 'smush_setting_column_right_additional', array( $this, 'resize_settings' ), 20 );
 		add_action( 'smush_setting_column_right_outside', array( $this, 'full_size_options' ), 20, 2 );
 		add_action( 'smush_setting_column_right_outside', array( $this, 'scale_options' ), 20, 2 );
+		add_action( 'wp_smush_render_setting_row', array( $this, 'set_background_email_setting_visibility' ) );
 	}
 
 	/**
@@ -187,7 +189,7 @@ class Bulk extends Abstract_Summary_Page implements Interface_Page {
 	public function settings_desc( $setting_key = '' ) {
 		if ( empty( $setting_key ) || ! in_array(
 			$setting_key,
-			array( 'resize', 'original', 'strip_exif', 'png_to_jpg' ),
+			array( 'resize', 'original', 'strip_exif', 'png_to_jpg', 'background_email' ),
 			true
 		) ) {
 			return;
@@ -240,6 +242,27 @@ class Bulk extends Abstract_Summary_Page implements Interface_Page {
 						'wp-smushit'
 					);
 					break;
+				case 'background_email':
+					$bg_optimization = WP_Smush::get_instance()->core()->mod->bg_optimization;
+					if ( $bg_optimization->can_use_background() ) {
+						$bg_email_desc   = sprintf( __( 'You will receive an email at <strong>%s</strong> when the bulk smush has completed.', 'wp-smushit' ), $bg_optimization->get_mail_recipient() );
+					} else {
+						$bulk_upgrade_url = $this->get_utm_link(
+							array(
+								'coupon'       => 'SMUSH30OFF',
+								'checkout'     => 0,
+								'utm_campaign' => 'smush_bulk_smush_BO_email_toggle',
+							)
+						);
+						$bg_email_desc    = sprintf(
+							esc_html__( 'Get the email notification as part of the Background Optimization feature. You don’t have to keep the bulk smush page open when it is in progress. Be notified when Background Optimization completes. %1$sTry it with Smush Pro%2$s', 'wp-smushit' ),
+							'<a href="' . esc_url( $bulk_upgrade_url ) . '" class="smush-upsell-link" target="_blank">',
+							'</a>'
+						);
+					}
+					echo wp_kses_post( $bg_email_desc );
+					break;
+					
 				default:
 					break;
 			}
@@ -488,32 +511,67 @@ class Bulk extends Abstract_Summary_Page implements Interface_Page {
 	public function bulk_smush_metabox() {
 		$core = WP_Smush::get_instance()->core();
 
-		$total_images_to_smush = $this->get_total_images_to_smush();
+		$total_images_to_smush = $core->remaining_count();
 
 		// This is the same calculation used for $core->remaining_count,
 		// except that we don't add the re-smushed count here.
 		$unsmushed_count = $core->total_count - $core->smushed_count - $core->skipped_count;
 
-		$bulk_upgrade_url = add_query_arg(
+		$bulk_upgrade_url       = $this->get_utm_link(
 			array(
 				'coupon'       => 'SMUSH30OFF',
 				'checkout'     => 0,
-				'utm_source'   => 'smush',
-				'utm_medium'   => 'plugin',
-				'utm_campaign' => Core::$max_free_bulk < $total_images_to_smush ? 'smush_bulksmush_morethan50images_tryproforfree' : 'smush_bulksmush_lessthan50images_tryproforfree',
-			),
-			$this->upgrade_url
+				'utm_campaign' => 'smush_bulk_smush_complete_global',
+			)
+		);
+		$in_progress_upsell_url = $this->get_utm_link(
+			array(
+				'coupon'       => 'SMUSH30OFF',
+				'checkout'     => 0,
+				'utm_campaign' => 'smush_bulk_smush_progress_BO',
+			)
+		);
+
+		$upsell_cdn_url 		=  $this->get_utm_link(
+			array(
+				'coupon'       => 'SMUSH30OFF',
+				'checkout'     => 0,
+				'utm_campaign' => 'smush_bulksmush_cdn',
+			)
+		);
+		
+		$bg_optimization               = WP_Smush::get_instance()->core()->mod->bg_optimization;
+		$background_processing_enabled = $bg_optimization->should_use_background();
+		$background_in_processing      = $background_processing_enabled && $bg_optimization->is_in_processing();
+
+		if ( $bg_optimization->can_use_background() ) {
+			$upsell_text = '';
+		} else {
+			$upsell_text = sprintf(
+				/* translators: %s: Upsell Link */
+				__( 'Want to exit the page? Background Optimization is available with Smush Pro, allowing you to leave while Smush continues to work its magic. %s', 'wp-smushit' ),
+				'<a class="smush-upsell-link" target="_blank" href="' . esc_url( $in_progress_upsell_url ) . '"><strong>' . esc_html__( 'Try Smush Pro today and get 30% off', 'wp-smushit' ) . '</strong></a>'
+			);
+		}
+		$in_processing_notice = sprintf(
+			__( 'Bulk Smush is currently running. Please keep this page open until the process is complete. %s', 'wp-smushit' ),
+			$upsell_text
 		);
 
 		$this->view(
 			'bulk/meta-box',
 			array(
-				'core'                  => $core,
-				'is_pro'                => WP_Smush::is_pro(),
-				'unsmushed_count'       => $unsmushed_count > 0 ? $unsmushed_count : 0,
-				'resmush_count'         => count( get_option( 'wp-smush-resmush-list', array() ) ),
-				'total_images_to_smush' => $total_images_to_smush,
-				'bulk_upgrade_url'      => $bulk_upgrade_url,
+				'core'                            => $core,
+				'can_use_background'              => $bg_optimization->can_use_background(),
+				'unsmushed_count'                 => $unsmushed_count > 0 ? $unsmushed_count : 0,
+				'resmush_count'                   => count( get_option( 'wp-smush-resmush-list', array() ) ),
+				'total_images_to_smush'           => $total_images_to_smush,
+				'bulk_upgrade_url'                => $bulk_upgrade_url,
+				'upsell_cdn_url'				  => $upsell_cdn_url,
+				'background_processing_enabled'   => $background_processing_enabled,
+				'background_in_processing'        => $background_in_processing,
+				'background_in_processing_notice' => $bg_optimization->get_in_process_notice(),
+				'in_processing_notice' 			  => $in_processing_notice,
 			)
 		);
 	}
@@ -569,4 +627,32 @@ class Bulk extends Abstract_Summary_Page implements Interface_Page {
 		<?php
 	}
 
+	public function add_pro_tag( $name ) {
+		$settings = Settings::get_instance();
+		if ( ! $settings->is_pro_field( $name ) || $settings->can_access_pro_field( $name ) ) {
+			return;
+		}
+		?>
+		<span class="sui-tag sui-tag-pro"><?php esc_html_e( 'Pro', 'wp-smushit' ); ?></span>
+		<?php
+	}
+
+	function set_background_email_setting_visibility( $name ) {
+		if ( $name !== 'background_email' ) {
+			return;
+		}
+
+		$bg_optimization       = WP_Smush::get_instance()->core()->mod->bg_optimization;
+		$is_background_enabled = $bg_optimization->should_use_background();
+
+		if ( ! $is_background_enabled && $bg_optimization->can_use_background() ) {
+			?>
+			<style>
+				.background_email-settings-row {
+					display: none !important;
+				}
+			</style>
+			<?php
+		}
+	}
 }

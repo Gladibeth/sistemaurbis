@@ -31,6 +31,8 @@ class FrmApplicationTemplate {
 	/**
 	 * @param array<string> $keys
 	 * @param array<string> $keys_with_images
+	 *
+	 * @return void
 	 */
 	public static function init() {
 		/**
@@ -80,11 +82,27 @@ class FrmApplicationTemplate {
 	 */
 	private static function populate_category_information( $categories ) {
 		foreach ( $categories as $category ) {
-			if ( false !== strpos( $category, '+Views' ) || in_array( $category, self::$categories, true ) ) {
+			if ( self::category_matches_a_license_type( $category ) ) {
+				continue;
+			}
+			if ( in_array( $category, self::$categories, true ) ) {
 				continue;
 			}
 			self::$categories[] = $category;
 		}
+	}
+
+	/**
+	 * @since 5.5.2
+	 *
+	 * @param string $category
+	 * @return bool
+	 */
+	private static function category_matches_a_license_type( $category ) {
+		if ( false !== strpos( $category, '+Views' ) ) {
+			return true;
+		}
+		return in_array( $category, FrmFormsHelper::ignore_template_categories(), true );
 	}
 
 	/**
@@ -141,8 +159,11 @@ class FrmApplicationTemplate {
 				$application['forPurchase'] = true;
 			}
 			$application['upgradeUrl'] = $this->get_admin_upgrade_link();
+			$application['requires']   = FrmFormsHelper::get_plan_required( $application );
 			$application['link']       = $application['upgradeUrl'];
 		}
+
+		$application['isNew'] = $this->is_new();
 
 		return $application;
 	}
@@ -178,6 +199,17 @@ class FrmApplicationTemplate {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Check if an application template is new. If it is, we include a "NEW" pill beside the title.
+	 *
+	 * @since 6.0
+	 *
+	 * @return bool
+	 */
+	private function is_new() {
+		return ! empty( $this->api_data['is_new'] );
 	}
 
 	/**

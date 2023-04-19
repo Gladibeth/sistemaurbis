@@ -26,6 +26,16 @@ if ( ! class_exists( 'Restrict_Content_Pro' ) ) :
 	 * @since 3.0
 	 */
 	final class Restrict_Content_Pro {
+		const VERSION = '3.5.27';
+
+		/**
+		 * Stores the base slug for the extension.
+		 *
+		 * @since 3.5.18
+		 *
+		 * @var string
+		 */
+		const FILE = RCP_PLUGIN_FILE;
 
 		/**
 		 * @var Restrict_Content_Pro The one true Restrict_Content_Pro
@@ -78,6 +88,11 @@ if ( ! class_exists( 'Restrict_Content_Pro' ) ) :
 		public $components;
 
 		/**
+		 * @var boolean
+		 */
+		private $is_pro;
+
+		/**
 		 * Main Restrict_Content_Pro Instance.
 		 *
 		 * Insures that only one instance of Restrict_Content_Pro exists in memory at any one
@@ -96,7 +111,7 @@ if ( ! class_exists( 'Restrict_Content_Pro' ) ) :
 		 *
 		 * @return Restrict_Content_Pro The one true Restrict_Content_Pro
 		 */
-		public static function instance( $file = '' ) {
+		public static function instance( $file = '', $use_PUE = false ) {
 
 			// Return if already instantiated
 			if ( self::is_instantiated() ) {
@@ -104,12 +119,12 @@ if ( ! class_exists( 'Restrict_Content_Pro' ) ) :
 			}
 
 			// Setup the singleton
-			self::setup_instance( $file );
+			self::setup_instance( $file, $use_PUE );
 
 			// Bootstrap
 			self::$instance->setup_constants();
-			self::$instance->setup_globals();
 			self::$instance->setup_files();
+			self::$instance->setup_globals();
 			self::$instance->setup_application();
 
 			// Backwards compat globals
@@ -171,9 +186,22 @@ if ( ! class_exists( 'Restrict_Content_Pro' ) ) :
 		 * @access private
 		 * @since  3.0
 		 */
-		private static function setup_instance( $file = '' ) {
-			self::$instance       = new Restrict_Content_Pro();
+		private static function setup_instance( $file = '', $use_PUE = false) {
+			self::$instance       = new Restrict_Content_Pro( $use_PUE );
 			self::$instance->file = $file;
+		}
+
+		/**
+		 * Constructor.
+		 *
+		 * @since 3.5.18
+		 */
+		public function __construct( $use_PUE ) {
+			if( $use_PUE ) {
+				if ( function_exists( 'tribe_register_provider' ) ) {
+					tribe_register_provider( \RCP\PUE\Provider::class );
+				}
+			}
 		}
 
 		/**
@@ -186,7 +214,7 @@ if ( ! class_exists( 'Restrict_Content_Pro' ) ) :
 		private function setup_constants() {
 
 			if ( ! defined( 'RCP_PLUGIN_VERSION' ) ) {
-				define( 'RCP_PLUGIN_VERSION', '3.5.20' );
+				define( 'RCP_PLUGIN_VERSION', self::VERSION );
 			}
 
 			if ( ! defined( 'RCP_PLUGIN_FILE' ) ) {
@@ -404,10 +432,11 @@ if ( ! class_exists( 'Restrict_Content_Pro' ) ) :
 			// @todo load this only when needed
 			require_once RCP_PLUGIN_DIR . 'core/includes/batch/v3/class-migrate-memberships.php';
 
-
-
 			// block functions
 			require_once RCP_PLUGIN_DIR . 'core/includes/block-functions.php';
+
+			// Integrations.
+			require_once RCP_PLUGIN_DIR . 'core/includes/integrations/class-rcp-telemetry.php';
 
 			if ( file_exists( RCP_PLUGIN_DIR . 'pro/class-restrict-content-pro.php') ) {
 				require_once( RCP_PLUGIN_DIR . 'pro/class-restrict-content-pro.php' );
@@ -532,6 +561,20 @@ if ( ! class_exists( 'Restrict_Content_Pro' ) ) :
 			global $rcp_export_page;
 			global $rcp_help_page;
 
+		}
+
+		/**
+		 * Check if the current instance is PRO. This does not fully determine if the actual code is PRO.
+		 * The main purpose of this function is for labels.
+		 *
+		 * @since 3.5.28
+		 * @return bool
+		 */
+		public function is_pro() {
+			if( false === has_action('admin_menu','include_pro_pages') ) {
+				return false;
+			}
+			return true;
 		}
 
 	}

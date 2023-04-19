@@ -1,10 +1,10 @@
 === WooCommerce ===
-Contributors: automattic, mikejolley, jameskoster, claudiosanches, rodrigosprimo, peterfabian1000, vedjain, jamosova, obliviousharmony, konamiman, sadowski, wpmuguru, royho, barryhughes-1
-Tags: e-commerce, store, sales, sell, woo, shop, cart, checkout, downloadable, downloads, payments, paypal, storefront, stripe, woo commerce
-Requires at least: 5.8
-Tested up to: 6.0
+Contributors: automattic, mikejolley, jameskoster, claudiosanches, rodrigosprimo, peterfabian1000, vedjain, jamosova, obliviousharmony, konamiman, sadowski, wpmuguru, royho, barryhughes-1, leifsinger
+Tags: online store, ecommerce, shop, shopping cart, sell online, storefront, checkout, payments, woo, woo commerce, e-commerce, store
+Requires at least: 6.0
+Tested up to: 6.2
 Requires PHP: 7.2
-Stable tag: 6.7.0
+Stable tag: 7.6.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -19,14 +19,17 @@ Our core platform is free, flexible, and amplified by a global community. The fr
 Whether you’re launching a business, taking brick-and-mortar retail online, or developing sites for clients, use WooCommerce for a store that powerfully blends content and commerce.
 
 - **Create beautiful, enticing storefronts** with [themes](https://woocommerce.com/product-category/themes/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) suited to your brand and industry.
-- **Customize pages in minutes** using modular [product blocks](https://docs.woocommerce.com/document/woocommerce-blocks/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
-- Showcase physical and digital goods, product variations, custom configurations, instant downloads, and affiliate items. [Bookings](https://woocommerce.com/products/woocommerce-bookings/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), [memberships](https://woocommerce.com/products/woocommerce-memberships/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), [subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), and [dynamic pricing](https://woocommerce.com/products/dynamic-pricing/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) rules are only an extension away.
+- **Increase revenue** with an optimized [shopping cart experience](https://woocommerce.com/checkout-blocks/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) that converts.
+- **Customize product pages in minutes** using modular [product blocks](https://docs.woocommerce.com/document/woocommerce-blocks/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
+- Showcase physical and digital goods, product variations, custom configurations, instant downloads, and affiliate items.
+- Sell [subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), [bookings](https://woocommerce.com/products/woocommerce-bookings/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), or [memberships](https://woocommerce.com/products/woocommerce-memberships/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), with our developer-vetted extensions.
 - **Rise to the top of search results** by leveraging [WordPress’ SEO advantage](https://www.searchenginejournal.com/wordpress-best-cms-seo/).
+- **Build on a platform that scales.** Get flexible eCommerce for [high-volume stores](https://woocommerce.com/high-volume-stores/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing). 
 
 Built-in tools and popular integrations help you efficiently manage your business operations. Many services are free to add with a single click via the optional [Setup Wizard](https://docs.woocommerce.com/document/woocommerce-setup-wizard/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
 
-- **Choose how you want to get paid**. Conveniently manage payments from the comfort of your store with [WooCommerce Payments](https://woocommerce.com/payments/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) (Available in the U.S., U.K., Ireland, Australia, New Zealand, Canada, and now: Spain, France, Germany, and Italy). Securely accept cards, mobile wallets, bank transfers, and cash thanks to [100+ payment gateways](https://woocommerce.com/product-category/woocommerce-extensions/payment-gateways/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) – including [Stripe](https://woocommerce.com/products/stripe/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), [PayPal](https://woocommerce.com/products/woocommerce-gateway-paypal-checkout/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), and [Square](https://woocommerce.com/products/square/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
-- **Configure your shipping options**. Print USPS labels right from your dashboard and even schedule a pickup with [WooCommerce Shipping](https://woocommerce.com/products/shipping/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) (U.S.-only). Connect with [well-known carriers](https://woocommerce.com/product-category/woocommerce-extensions/shipping-methods/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) such as UPS, FedEx, and ShipStation – plus a wide variety of delivery, inventory, and fulfillment solutions for your locale.
+- **Choose how you want to get paid**. Conveniently manage payments from the comfort of your store with [WooCommerce Payments](https://woocommerce.com/payments/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) (Available in the U.S., U.K., Ireland, Australia, New Zealand, Canada, Spain, France, Germany, and Italy). Securely accept credit cards, mobile wallets, bank transfers, and cash thanks to [100+ payment gateways](https://woocommerce.com/product-category/woocommerce-extensions/payment-gateways/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) – including [Stripe](https://woocommerce.com/products/stripe/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), [PayPal](https://woocommerce.com/products/woocommerce-gateway-paypal-checkout/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), and [Square](https://woocommerce.com/products/square/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
+- **Configure your shipping options**. Print USPS labels right from your dashboard and even schedule a pickup with [WooCommerce Shipping](https://woocommerce.com/products/shipping/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) (U.S.-only). Connect with [well-known carriers](https://woocommerce.com/product-category/woocommerce-extensions/shipping-methods/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) such as UPS and FedEx – plus a wide variety of delivery, inventory, and fulfillment solutions for your locale.
 - **Simplify sales tax**. Add [WooCommerce Tax](https://woocommerce.com/products/tax/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) or [similar integrated services](https://woocommerce.com/product-category/woocommerce-extensions/tax?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) to make automated calculations a reality.
 
 = Grow your business, add features, and monitor your store on the go =
@@ -35,7 +38,7 @@ WooCommerce means business. Keep tabs on the performance metrics most important 
 
 Expand your audience across marketing and social channels with [Google Ads](https://woocommerce.com/products/google-ads/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), [HubSpot](https://woocommerce.com/products/hubspot-for-woocommerce/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), [Mailchimp](https://woocommerce.com/products/mailchimp-for-woocommerce/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), and [Facebook](https://woocommerce.com/products/facebook/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) integrations. You can always check out the in-dashboard [Marketing Hub](https://docs.woocommerce.com/document/marketing-hub/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) for fresh ideas and tips to help you succeed.
 
-Enhance store functionality with hundreds of free and paid extensions from the [official WooCommerce Marketplace](https://woocommerce.com/products/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing). Our developers [vet each new extension](https://docs.woocommerce.com/document/marketplace-overview/#section-6?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) and regularly review existing inventory to maintain Marketplace quality standards. We are actively [looking for products that help store builders create successful stores](https://docs.woocommerce.com/document/marketplace-overview/#section-2?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
+Enhance store functionality with hundreds of free and paid extensions from the [official WooCommerce Marketplace](https://woocommerce.com/products/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing). Our developers [vet each new extension](https://docs.woocommerce.com/document/marketplace-overview/#section-6?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) and regularly review existing extensions to maintain Marketplace quality standards. We are actively [looking for products that help store builders create successful stores](https://docs.woocommerce.com/document/marketplace-overview/#section-2?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
 
 Manage your store from anywhere with the free WooCommerce [mobile app](https://woocommerce.com/mobile/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) (Android and iOS). Spoiler alert: Keep an ear out for the slightly addictive "cha-ching" notification sound each time you make a new sale!
 
@@ -45,7 +48,7 @@ With WooCommerce, your data belongs to you. Always.
 
 If you opt to share [usage data](https://woocommerce.com/usage-tracking/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) with us, you can feel confident knowing that it’s anonymized and kept secure. Choose to opt-out at any time without impacting your store. 
 
-Unlike hosted eCommerce solutions, WooCommerce store data is future-proof; should you wish to migrate to a different platform, you’re free to export all your content and take your site wherever you choose. No restrictions.
+Unlike hosted eCommerce solutions, WooCommerce store data is future-proof; you’re free to export all your content and take your site to any platform you choose. No restrictions.
 
 = Why developers choose (and love) WooCommerce =
 
@@ -61,7 +64,7 @@ The core platform is tested rigorously and often, supported by a dedicated devel
 
 = Be part of our growing international community =
 
-WooCommerce has a large, passionate community dedicated to helping merchants succeed, and it’s growing fast.
+WooCommerce has a large, passionate community dedicated to helping merchants succeed – and it’s growing fast.
 
 There are [WooCommerce Meetups](https://woocommerce.com/meetups/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) in locations around the world that you can attend for free and even get involved in running. These events are a great way to learn from others, share your expertise, and connect with like-minded folks.
 
@@ -115,7 +118,7 @@ Report bugs on the [WooCommerce GitHub repository](https://github.com/woocommerc
 
 = Where can I request new features, themes, and extensions? =
 
-Request new features and extensions and vote on existing suggestions on our official [ideas board](https://ideas.woocommerce.com/forums/133476-woocommerce?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing). Our Product teams regularly review requests and consider them valuable for product planning.
+Request new features and extensions and vote on existing suggestions on our official [feature request board](https://woocommerce.com/feature-requests/woocommerce?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing). Our Product teams regularly review requests and consider them valuable for product planning.
 
 = WooCommerce is awesome! Can I contribute? =
 
@@ -160,119 +163,128 @@ WooCommerce comes with some sample data you can use to see how products look; im
 
 == Changelog ==
 
-= 6.7.0 2022-07-12 =
+= 7.6.0 2023-04-13 =
 
-* Add - Add support to remote inbox notification actions to link to other wp-admin pages.  [#33237](https://github.com/woocommerce/woocommerce/pull/33237)
-* Add - Adding task list sidebar panel on Activity Panel.  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Add - Add a new admin list table implementation that works with the Custom Order Table.  [#32864](https://github.com/woocommerce/woocommerce/pull/32864)
-* Add - Implements update/saving logic for orders in the COT datastore. [#32667](https://github.com/woocommerce/woocommerce/pull/32667)
-* Add - Add tracks to new product and edit product screens  [#33120](https://github.com/woocommerce/woocommerce/pull/33120)
-* Add - Add/edit products: add new Tracks props  [#33177](https://github.com/woocommerce/woocommerce/pull/33177)
-* Add - Add wpAdmin scripts for tracking actions in the category, tags, and attribute pages. [#33118](https://github.com/woocommerce/woocommerce/pull/33118)
-* Add - Add purchase task to experimental task lists  [#33178](https://github.com/woocommerce/woocommerce/pull/33178)
-* Add - Add tracking for old product walkthrough and new product spotlight tour  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Add - Wrap spotlight product tour under experiment logic  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Add - Adding property to tasks tracks events to indicate context.  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Add - Add optional usage of database transaction when synchronizing data between posts table and the orders table  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Add - Add tasklist_cancel_load_sample_products_click event track for product task  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Add - Add individual analytics leaderboard endpoints.  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Add - Add a new Product Reviews admin screen, and remove reviews from the existing Comments admin screen.  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Add - Add product page spotlight tour  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Add - Updated @automattic/tour-kit to 1.1.1 which has live resize functionality [#33452](https://github.com/woocommerce/woocommerce/pull/33452)
-* Add - Add a new collection parameter, force_cache_refresh, to Reports API endpoints which will cause the current request to bypass the cache, re-run the queries for the requested data, and overwrite the previous cache entry with the new results. [#33221](https://github.com/woocommerce/woocommerce/pull/33221)
-* Dev - Remove contributors script as it is no longer needed.  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Dev - Add a new ArrayUtil::select method  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Dev - Add script for accessing database schema via CLI  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Dev - New filter `woocommerce_taxonomy_archive_description_raw` added to provide a further way to modify product archive descriptions.  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Dev - Add script to get database schema from CLI  [#33130](https://github.com/woocommerce/woocommerce/pull/33130)
-* Dev - Make it possible to specify input field names separately from the ID.  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Dev - Fix onboarding task type errors after migrating woo.onboarding to TS  [#33153](https://github.com/woocommerce/woocommerce/pull/33153)
-* Dev - Upgraded react-router-dom to v6, it should not cause any visible changes to the end user  [#33156](https://github.com/woocommerce/woocommerce/pull/33156)
-* Dev - Comment: Simply update deprecated-tasks.tsx type annotations  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Dev - Fix type errors in ./client after migrating options store to TS  [#33168](https://github.com/woocommerce/woocommerce/pull/33168)
-* Dev - Update woocommerce-admin "test:watch" command  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Dev - Update webpack.config.js to ensure we use styles from build-style  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Dev - Allow strings to be passed as 'class' arg to '`woocommerce_form_field()` [#33454](https://github.com/woocommerce/woocommerce/pull/33454)
-* Dev - Add a mechanism to mock globals and a DynamicDecorator class.  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Dev - Deprecate wcAdminAssetUrl and WC_ADMIN_IMAGES_FOLDER_URL  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Dev - Update dependency history to ^5.3.0  [#33027](https://github.com/woocommerce/woocommerce/pull/33027)
-* Dev - Remove WCA installation merge test -- no longer needed  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Dev - Comment: Whitespace change, no changelog required  [#33027](https://github.com/woocommerce/woocommerce/pull/33027)
-* Dev - Update Webpack to 5.x  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Enhancement - Add total payments volume rule processor for inbox notifications  [#33192](https://github.com/woocommerce/woocommerce/pull/33192)
-* Enhancement - Improve Twenty Twenty One notice styles  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Enhancement - Swap info and message notice colors in Twenty-Twenty  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Enhancement - Update product template descriptions  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Fix - Suppressing warnings for malformed metadata in product template downloads.  [#33184](https://github.com/woocommerce/woocommerce/pull/33184)
-* Fix - Fix continue button is enabled even when email is null in setup wizard  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Fix - Fix failing TimeInterval test  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Fix - Fix notice on woocommerce_admin_disabled filter enabled  [#33108](https://github.com/woocommerce/woocommerce/pull/33108)
-* Fix - Use term ID to query category IDs in analytics  [#33164](https://github.com/woocommerce/woocommerce/pull/33164)
-* Fix - fix setup wizard usage button loading state  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Fix - Fixes for the WP CLI updates  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Fix - Fix a warning caused by an attempt to iterate over a submenu that may not exist on WC Pay subscriptions page.  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Fix - Fix broken design of Single Product template in block themes when product had no reviews or additional info  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Fix - Clean up unused remote inbox notifications option  [#33373](https://github.com/woocommerce/woocommerce/pull/33373)
-* Fix - Settings: fix Tracks event when enabling/disabling advanced features settings.  [#33305](https://github.com/woocommerce/woocommerce/pull/33305)
-* Fix - Fix accidently deleted method during merge for 33034.  [#33142](https://github.com/woocommerce/woocommerce/pull/33142)
-* Fix - Fix the styling of the frame in the Leaderboard section of Analytics.  [#33163](https://github.com/woocommerce/woocommerce/pull/33163)
-* Fix - Fix obw free extension rules for the marketing task with php 8  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Fix - Fix product tour splotlight location  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Fix - Fix product tour TypeError when reading innerHTML [#33448](https://github.com/woocommerce/woocommerce/pull/33448)
-* Fix - Fix: Content width issue and Classic Template blocks alignment issue for Twenty Twenty-Two.  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Fix - Fix typos in various cot migration messages.  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Fix - Add role="presentation" to table on the add-to-cart form as an accessibility enhancement.  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Fix - Change attribute slug length requirement and add wc_create_attribute tests  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Fix - Fix the script version parameter for chunk URLs  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Fix - Make sure payment gateway title is a string before sanitizing
-* Fix - Trigger Photoswipe modal when clicking child elements of the trigger element  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Fix - Updates the stable tag and changelog from 6.6.0 release.  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Fix - Remove placeholder product icon if a featured product image is available (avoids issues with transparent images).  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Fix - Update CLI messages in COT migration to be more clear.
-* Fix - Fix payments experiment banner logic to be executed before experiment is called. [#33549](https://github.com/woocommerce/woocommerce/pull/33549)
-* Fix - Move tracks _ui and _ut properties out of filtered tracks properties. [#33621](https://github.com/woocommerce/woocommerce/pull/33621)
-* Fix - Revert marketing task completion logic to only complete after actioned by user. [#33676](https://github.com/woocommerce/woocommerce/pull/33676)
-* Fix - Fix Uncaught DOMException on WooCommerce -> Extensions page. [#33711](https://github.com/woocommerce/woocommerce/pull/33711)
-* Fix - Import correct controls for export function. [#33709](https://github.com/woocommerce/woocommerce/pull/33709)
-* Fix - Rename event prop from cross-sell to cross_sell. [#33704](https://github.com/woocommerce/woocommerce/pull/33704)
-* Fix - Fixing bug where the activity panel stopped functioning after route changes. [#33722](https://github.com/woocommerce/woocommerce/pull/33722)
-* Performance - Remove orderCount and publishedProductCount from preloaded settings and moved to using orders/products data stores.  [#33064](https://github.com/woocommerce/woocommerce/pull/33064)
-* Tweak - Add type hints in the signature of wc_add_number_precision to prevent invalid inputs.  [#26965](https://github.com/woocommerce/woocommerce/pull/26965)
-* Tweak - Introduce new hook `woocommerce_set_cookie_options` to exercise more control over cookie options.  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Tweak - Add charset collation to COT tables.  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Tweak - Correct typos in Custom Order Tables migration runner.  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Tweak - Improve styling of WooCommerce notices (frontend) for the Twenty Twenty theme.  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Tweak - Update product task experiment names [#33428](https://github.com/woocommerce/woocommerce/pull/33428)
-* Tweak - Make the option 'woocommerce_tracker_ua' load on demand.  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Tweak - Removed Facebook for WooCommerce extension from the Installed marketing extensions list. [#33781](https://github.com/woocommerce/woocommerce/pull/33781)
-* Update - Log errors during the posts to orders table migrations  [#33136](https://github.com/woocommerce/woocommerce/pull/33136)
-* Update - Comment: Changelog already added (see fix-product_attributes_lookup_table_update), the intention is for this to ship in the same release.  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Update - Update email marketing checkbox to be unticked by default.  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Update - Remove the navigation nudge note  [#33241](https://github.com/woocommerce/woocommerce/pull/33241)
-* Update - Update the version of Action Scheduler to 3.4.1  [#33184](https://github.com/woocommerce/woocommerce/pull/33184)
-* Update - Update ActionScheduler to 3.4.2  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Update - Add "built by Woo" label to Pinterest  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Update - Comment: Bumping versions for 6.7  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Update - Replace the date_created column name with a class property in the analytics datastore  [#32644](https://github.com/woocommerce/woocommerce/pull/32644)
-* Update - Update the tax task title to "Set up tax rates"  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Update - Turn on experimental-product-tour feature flag [#33413](https://github.com/woocommerce/woocommerce/pull/33413)
-* Update - Woo Blocks 7.7.0, 7.8.0 and 7.8.1  [#33329](https://github.com/woocommerce/woocommerce/pull/33329)
-* Update - WooCommerce Blocks to 7.8.3  [#33514](https://github.com/woocommerce/woocommerce/pull/33514)
+**WooCommerce**
 
-**WooCommerce Blocks 7.7.0 & 7.8.0 & 7.8.1**
+* Fix - Fix incorrect usage of dispatch, useSelect, and setState calls in homescreen along with settings and onboarding package [#37641](https://github.com/woocommerce/woocommerce/pull/37641)
+* Fix - Do not attempt to cache order during order creation (HPOS). [#37569](https://github.com/woocommerce/woocommerce/pull/37569)
+* Fix - Add default value when calling get_option for woocommerce_task_list_tracked_completed_tasks. [#37397](https://github.com/woocommerce/woocommerce/pull/37397)
+* Fix - When order meta data is saved via HPOS, it should be backfilled to the CPT data store. [#36593](https://github.com/woocommerce/woocommerce/pull/36593)
+* Fix - Overwrite clone method to prevent duplicate data when saving a clone. [#37313](https://github.com/woocommerce/woocommerce/pull/37313)
+* Fix - Add default button padding to TT2 stylesheet to fix some visual issues in WP 5.9 and 6.0 [#37018](https://github.com/woocommerce/woocommerce/pull/37018)
+* Fix - Added skydropx slug back to shipping partners list so that it can be installed through the shipping task [#37286](https://github.com/woocommerce/woocommerce/pull/37286)
+* Fix - Add HPOS compat for admin report functions. [#36650](https://github.com/woocommerce/woocommerce/pull/36650)
+* Fix - Add HPOS compat for wc-user-functions.php. [#36650](https://github.com/woocommerce/woocommerce/pull/36650)
+* Fix - Add support for null inputs to pnpm wc_add_number_precision [#36891](https://github.com/woocommerce/woocommerce/pull/36891)
+* Fix - Add support for `after`, `before`, `modified_after` and `modified_before` params in local timezone. [#36650](https://github.com/woocommerce/woocommerce/pull/36650)
+* Fix - Add validation when saving attributes and variations [#37046](https://github.com/woocommerce/woocommerce/pull/37046)
+* Fix - Also delete when order type is placehoder, since it was created by HPOS. [#36650](https://github.com/woocommerce/woocommerce/pull/36650)
+* Fix - Corrects a class reference in the ProductDownloadsServiceProvider. [#37052](https://github.com/woocommerce/woocommerce/pull/37052)
+* Fix - Corrects a variable name in Reports\Stock\Stats. It was missed during the last name change. [#37057](https://github.com/woocommerce/woocommerce/pull/37057)
+* Fix - Corrects class namespaces in Onboarding. It was missed during last restructuring. [#37056](https://github.com/woocommerce/woocommerce/pull/37056)
+* Fix - Corrects imported classes. Class names should not begin with a backslash. [#37058](https://github.com/woocommerce/woocommerce/pull/37058)
+* Fix - Ensure product importer imports all lines in a CSV file. [#36839](https://github.com/woocommerce/woocommerce/pull/36839)
+* Fix - Fetch order first to refresh cache before returning prop. [#36650](https://github.com/woocommerce/woocommerce/pull/36650)
+* Fix - Fix 0 rendered on short-circuit evaluation. [#37104](https://github.com/woocommerce/woocommerce/pull/37104)
+* Fix - Fix ArrayUtil::get_value_or_default method not behaving as documented for null array values [#37053](https://github.com/woocommerce/woocommerce/pull/37053)
+* Fix - Fix blank screen is displayed during OBW when using WP5.9 [#36903](https://github.com/woocommerce/woocommerce/pull/36903)
+* Fix - Fix duplicated global attribute [#37109](https://github.com/woocommerce/woocommerce/pull/37109)
+* Fix - fixed bug where jetpack connection owner field was assumed to be username when its actually display name [#37170](https://github.com/woocommerce/woocommerce/pull/37170)
+* Fix - Fixed payments recommendations pane in WooCommerce Payment Settings using the wrong image prop [#37259](https://github.com/woocommerce/woocommerce/pull/37259)
+* Fix - Fixes filtering by attributes in the Analytics Orders and Variations reports. [#37223](https://github.com/woocommerce/woocommerce/pull/37223)
+* Fix - Fix incorrect VAT exempt behaviour on shop page when prices are exclusive of tax. [#33991](https://github.com/woocommerce/woocommerce/pull/33991)
+* Fix - Fix React rendering falsy value in marketing page. [#37227](https://github.com/woocommerce/woocommerce/pull/37227)
+* Fix - Fix the inability to apply a coupon whose code is "0" [#36924](https://github.com/woocommerce/woocommerce/pull/36924)
+* Fix - fix typo in variable name [#36759](https://github.com/woocommerce/woocommerce/pull/36759)
+* Fix - Fix unit test snapshots due to a dependency version change [#36435](https://github.com/woocommerce/woocommerce/pull/36435)
+* Fix - Fix variations exported as draft being imported as draft (and thus remaining invisible) [#36933](https://github.com/woocommerce/woocommerce/pull/36933)
+* Fix - Fix WP data resolution (`invalidateResolution`) not working with WP 5.9 in marketing page. [#37198](https://github.com/woocommerce/woocommerce/pull/37198)
+* Fix - Handle date arguments in OrderTableQuery correctly by adjusting their timezones before running. [#36650](https://github.com/woocommerce/woocommerce/pull/36650)
+* Fix - Load same stylesheets in the Site Editor as in the frontend [#36911](https://github.com/woocommerce/woocommerce/pull/36911)
+* Fix - Loco Translate and wp-cli compatibility for woocommerce-admin translation files [#36739](https://github.com/woocommerce/woocommerce/pull/36739)
+* Fix - Override react version to 17.0.2 [#37087](https://github.com/woocommerce/woocommerce/pull/37087)
+* Fix - Prevent possible warning arising from use of woocommerce_wp_* family of functions. [#37026](https://github.com/woocommerce/woocommerce/pull/37026)
+* Fix - Record values for toggled checkboxes/features in settings [#37242](https://github.com/woocommerce/woocommerce/pull/37242)
+* Fix - Restore the sort order when orders are cached. [#36650](https://github.com/woocommerce/woocommerce/pull/36650)
+* Fix - Treat order as seperate resource when validating for webhook since it's not necessarily a CPT anymore. [#36650](https://github.com/woocommerce/woocommerce/pull/36650)
+* Fix - Update Customers report with latest user data after editing user. [#37237](https://github.com/woocommerce/woocommerce/pull/37237)
+* Add - Add "Create a new campaign" modal in Campaigns card in Multichannel Marketing page. [#37044](https://github.com/woocommerce/woocommerce/pull/37044)
+* Add - Add a cache for orders, to use when custom order tables are enabled [#35014](https://github.com/woocommerce/woocommerce/pull/35014)
+* Add - Add an encoding selector to the product importer [#36819](https://github.com/woocommerce/woocommerce/pull/36819)
+* Add - Add Campaigns card into Multichannel Marketing page. [#36735](https://github.com/woocommerce/woocommerce/pull/36735)
+* Add - Added images support for the payment recommendations transaction processors [#37230](https://github.com/woocommerce/woocommerce/pull/37230)
+* Add - Added `woocommerce_widget_layered_nav_filters_start/end` hooks around layered nav filters widget [#36705](https://github.com/woocommerce/woocommerce/pull/36705)
+* Add - Add introduction banner to multichannel marketing page. [#37110](https://github.com/woocommerce/woocommerce/pull/37110)
+* Add - Add marketplace suggestions and multichannel marketing information to WC Tracker. [#37017](https://github.com/woocommerce/woocommerce/pull/37017)
+* Add - Add new feature flag for the product edit blocks experience [#37137](https://github.com/woocommerce/woocommerce/pull/37137)
+* Add - Add productBlockEditorSettings script to be used for the Product Block Editor. [#37123](https://github.com/woocommerce/woocommerce/pull/37123)
+* Add - Add support for new countries in WCPay [#36906](https://github.com/woocommerce/woocommerce/pull/36906)
+* Add - Add wp-json/wc-admin/shipping-partner-suggestions API endpoint [#37155](https://github.com/woocommerce/woocommerce/pull/37155)
+* Add - Allow sorting by menu_order in products widget. [#37002](https://github.com/woocommerce/woocommerce/pull/37002)
+* Add - Create editor skeleton on add/edit product pages [#37023](https://github.com/woocommerce/woocommerce/pull/37023)
+* Add - Creating product entity in auto-draft status, and adding support for retrieving preexisting products. [#37064](https://github.com/woocommerce/woocommerce/pull/37064)
+* Add - Fixed image array in edit context for product/variations endpoint. [#28498](https://github.com/woocommerce/woocommerce/pull/28498)
+* Add - Initial e2e tests for new product editor. [#36902](https://github.com/woocommerce/woocommerce/pull/36902)
+* Add - Log to order notes when coupons are removed or applied. [#30642](https://github.com/woocommerce/woocommerce/pull/30642)
+* Add - Make WC_Order::get_tax_location accessible publicly through a wrapper function. [#36953](https://github.com/woocommerce/woocommerce/pull/36953)
+* Add - Update product post rest config when block editor feature is enabled. [#37206](https://github.com/woocommerce/woocommerce/pull/37206)
+* Update - Update WooCommerce Blocks to 9.8.4 [#37492](https://github.com/woocommerce/woocommerce/pull/37492)
+* Update - Update WooCommerce Blocks to 9.8.3 [#37477](https://github.com/woocommerce/woocommerce/pull/37477)
+* Update - Update WooCommerce Blocks to 9.8.2 [#37373](https://github.com/woocommerce/woocommerce/pull/37373)
+* Update - Add tabs and sections placeholders in product blocks template [#37174](https://github.com/woocommerce/woocommerce/pull/37174)
+* Update - Change the default date used on Revenue and Orders report to 'date_paid' and create spotlight on both reports [#36653](https://github.com/woocommerce/woocommerce/pull/36653)
+* Update - Change Variations form shown in Variations tab when there are no variations created [#36957](https://github.com/woocommerce/woocommerce/pull/36957)
+* Update - Moving currencyContext to relevant package, and updating all references. [#36959](https://github.com/woocommerce/woocommerce/pull/36959)
+* Update - Moving some components out of core and into product-editor package. [#36945](https://github.com/woocommerce/woocommerce/pull/36945)
+* Update - Moving use-product-helper and related product hooks to product editor package. [#37006](https://github.com/woocommerce/woocommerce/pull/37006)
+* Update - Refresh data source poller transients on wc_admin_daily [#37027](https://github.com/woocommerce/woocommerce/pull/37027)
+* Update - Remove accordion from "Other payment providers" in payment task [#37205](https://github.com/woocommerce/woocommerce/pull/37205)
+* Update - Remove Cart2Cart option from add product task [#37285](https://github.com/woocommerce/woocommerce/pull/37285)
+* Update - Show link to store settings when stock management is disabled. [#37140](https://github.com/woocommerce/woocommerce/pull/37140)
+* Update - Update create-wc-extension script within woocommerce-admin. [#36917](https://github.com/woocommerce/woocommerce/pull/36917)
+* Update - Update imports of product slot fills to new @woocommerce/product-editor library [#36830](https://github.com/woocommerce/woocommerce/pull/36830)
+* Update - Update obw payment gateways [#37233](https://github.com/woocommerce/woocommerce/pull/37233)
+* Update - Update playwright api-core-tests to associate orders with real products to prevent extension issues for those that validate product ids [#37243](https://github.com/woocommerce/woocommerce/pull/37243)
+* Update - Update playwright api-core-tests to handle cases where extensions add to shipping methods [#37239](https://github.com/woocommerce/woocommerce/pull/37239)
+* Update - Update product template by adding the list price and sale price blocks. [#37211](https://github.com/woocommerce/woocommerce/pull/37211)
+* Update - Updates automated release testing workflow to use Playwright [#36598](https://github.com/woocommerce/woocommerce/pull/36598)
+* Update - Update template of product type to include product name block. [#37132](https://github.com/woocommerce/woocommerce/pull/37132)
+* Update - Update the date modified field for an order when a refund for it is successfully processed. [#37047](https://github.com/woocommerce/woocommerce/pull/37047)
+* Update - Update WooCommerce BLocks to 9.8.0 [#37210](https://github.com/woocommerce/woocommerce/pull/37210)
+* Update - Update WooCommerce Blocks to 9.8.1 [#37238](https://github.com/woocommerce/woocommerce/pull/37238)
+* Update - Updating rest namespace for product posttype to version 3. [#37028](https://github.com/woocommerce/woocommerce/pull/37028)
+* Update - Use the currently activated theme color for completed tasks strikethough [#37001](https://github.com/woocommerce/woocommerce/pull/37001)
+* Dev - Add @woocommerce/admin-layout package. [#37094](https://github.com/woocommerce/woocommerce/pull/37094)
+* Dev - Add CES data store to @woocommerce/customer-effort-score [#37252](https://github.com/woocommerce/woocommerce/pull/37252)
+* Dev - Add existing global attribute layout #36944 [#36944](https://github.com/woocommerce/woocommerce/pull/36944)
+* Dev - Add missing woocommerce_run_on_woocommerce_admin_updated hook for the scheduled action registered in RemoteInboxNotificationsEngine [#36768](https://github.com/woocommerce/woocommerce/pull/36768)
+* Dev - add wpLogin import to wc-baseline-load.js [#36940](https://github.com/woocommerce/woocommerce/pull/36940)
+* Dev - Convert "Allow backorders?" into radio buttons [#37282](https://github.com/woocommerce/woocommerce/pull/37282)
+* Dev - Fix lint issues [#36988](https://github.com/woocommerce/woocommerce/pull/36988)
+* Dev - Fix the value of `UPDATE_WC` environment variable in the daily k6 performance tests. [#37049](https://github.com/woocommerce/woocommerce/pull/37049)
+* Dev - Move CES components and utilities to @woocommerce/customer-effort-score [#37112](https://github.com/woocommerce/woocommerce/pull/37112)
+* Dev - Move hook to confirm unsaved form changes to navigation package [#36752](https://github.com/woocommerce/woocommerce/pull/36752)
+* Dev - Move product utils into product editor package [#36730](https://github.com/woocommerce/woocommerce/pull/36730)
+* Dev - Set up React Fast Refresh in woocommerce-admin [#37165](https://github.com/woocommerce/woocommerce/pull/37165)
+* Dev - Show "Stock status" as a collection of radio buttons [#37278](https://github.com/woocommerce/woocommerce/pull/37278)
+* Dev - Show a message for variable products [#37185](https://github.com/woocommerce/woocommerce/pull/37185)
+* Dev - Support E2E testing of draft releases. [#36997](https://github.com/woocommerce/woocommerce/pull/36997)
+* Dev - Sync @wordpress package versions via syncpack. [#37034](https://github.com/woocommerce/woocommerce/pull/37034)
+* Tweak - Add productId dependency when getting the product by id in ProductPage [#37152](https://github.com/woocommerce/woocommerce/pull/37152)
+* Tweak - Add tracking for local pickup method in Checkout [#36847](https://github.com/woocommerce/woocommerce/pull/36847)
+* Tweak - Add Tracks events for product inventory tab interactions. [#37202](https://github.com/woocommerce/woocommerce/pull/37202)
+* Tweak - Change Avalara CTA copy in tax task to Download [#37224](https://github.com/woocommerce/woocommerce/pull/37224)
+* Tweak - Make sure 'safe_text' settings are rendered as 'text' inputs for compatibility. [#37154](https://github.com/woocommerce/woocommerce/pull/37154)
+* Tweak - Prevent 'woocommerce_ajax_order_items_removed' from generating PHP warnings. [#37178](https://github.com/woocommerce/woocommerce/pull/37178)
+* Tweak - Rename "Manage stock?" label to "Stock management". [#37135](https://github.com/woocommerce/woocommerce/pull/37135)
+* Tweak - Trigger event `woocommerce_attributes_saved` following successful product meta box ajax update. [#36943](https://github.com/woocommerce/woocommerce/pull/36943)
+* Tweak - Visual tweaks for shipping partner banners [#37229](https://github.com/woocommerce/woocommerce/pull/37229)
+* Performance - Bypass Action Scheduler for customer updates. [#37265](https://github.com/woocommerce/woocommerce/pull/37265)
+* Performance - Switch wc_product_attributes_lookup table management to use truncate and dbDelta over drop table [#36872](https://github.com/woocommerce/woocommerce/pull/36872)
+* Enhancement - Add 'display_context' argument to wc_get_price_to_display(). [#25080](https://github.com/woocommerce/woocommerce/pull/25080)
+* Enhancement - Added woocommerce_reduce_order_item_stock action hook [#34721](https://github.com/woocommerce/woocommerce/pull/34721)
+* Enhancement - Add the support for the C&C Blocks in declaring compatibility feature [#36426](https://github.com/woocommerce/woocommerce/pull/36426)
 
-* Enhancement - Add the `Fixed image` and `Repeated image` media controls to the Featured Product block. ([6344](https://github.com/woocommerce/woocommerce-blocks/pull/6344))
-* Enhancement - Filter Products by Price: Decrease price slider step sequence from 10 to 1. ([6486](https://github.com/woocommerce/woocommerce-blocks/pull/6486))
-* Enhancement - Add the `Fixed image` and `Repeated image` media controls to the Featured Category block. ([6440](https://github.com/woocommerce/woocommerce-blocks/pull/6440))
-* Enhancement - Add support for `Font size` and `Font family` for the `Mini Cart` block. ([6396](https://github.com/woocommerce/woocommerce-blocks/pull/6396))
-* Fix - Remove bold styles from All Products block. ([6436](https://github.com/woocommerce/woocommerce-blocks/pull/6436))
-* Fix - Issue where the Cart & Checkout could have some of the locked inner blocks removed. ([6419](https://github.com/woocommerce/woocommerce-blocks/pull/6419))
-* Fix - Broken translation in Cart/Checkout blocks. ([6420](https://github.com/woocommerce/woocommerce-blocks/pull/6420))
-* Fix - Featured Item Blocks: Fix an issue where the default color could be overridden by a theme, and where custom colors were not applied correctly. ([6492](https://github.com/woocommerce/woocommerce-blocks/pull/6492))
-* Fix - Only enqueue the relevant translations script. ([6478](https://github.com/woocommerce/woocommerce-blocks/pull/6478))
-* Fix - All Products block: New product is missing in the Cart block if `Redirect to the cart page after successful addition` is enabled. ([6466](https://github.com/woocommerce/woocommerce-blocks/pull/6466))
-* Fix - Respect low stock visibility setting in Cart/Checkout. ([6444](https://github.com/woocommerce/woocommerce-blocks/pull/6444))
-* Fix - Decouple Store API payment handling from Checkout block loading code. ([6519](https://github.com/woocommerce/woocommerce-blocks/pull/6519))
-* Fix - PHP notice in Mini Cart when prices included taxes. ([6537](https://github.com/woocommerce/woocommerce-blocks/pull/6537))
 
 [See changelog for all versions](https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/changelog.txt).

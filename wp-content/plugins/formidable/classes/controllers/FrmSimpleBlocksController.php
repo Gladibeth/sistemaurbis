@@ -7,6 +7,8 @@ class FrmSimpleBlocksController {
 
 	/**
 	 * Enqueue Formidable Simple Blocks' js and CSS for editor in admin.
+	 *
+	 * @return void
 	 */
 	public static function block_editor_assets() {
 		$version = FrmAppHelper::plugin_version();
@@ -90,6 +92,8 @@ class FrmSimpleBlocksController {
 
 	/**
 	 * Registers simple form block
+	 *
+	 * @return void
 	 */
 	public static function register_simple_form_block() {
 		if ( ! is_callable( 'register_block_type' ) ) {
@@ -131,14 +135,19 @@ class FrmSimpleBlocksController {
 	/**
 	 * Renders a form given the specified attributes.
 	 *
-	 * @param $attributes
-	 *
+	 * @param array $attributes
 	 * @return string
 	 */
 	public static function simple_form_render( $attributes ) {
 		if ( ! isset( $attributes['formId'] ) ) {
 			return '';
 		}
+
+		/**
+		 * @since 5.5.2
+		 * @param array $attributes
+		 */
+		do_action( 'frm_before_simple_form_render', $attributes );
 
 		$params       = array_filter( $attributes );
 		$params['id'] = $params['formId'];

@@ -45,9 +45,12 @@
 				postbox.appendChild(
 					div({ className: 'frm_modal_content' })
 				);
-				postbox.appendChild(
-					div({ className: 'frm_modal_footer' })
-				);
+
+				if ( footer ) {
+					postbox.appendChild(
+						div({ className: 'frm_modal_footer' })
+					);
+				}
 			} else if ( 'string' === typeof title ) {
 				const titleElement = modal.querySelector( '.frm-modal-title' );
 				titleElement.textContent = title;
@@ -78,12 +81,19 @@
 			output.setAttribute( 'tabindex', 0 );
 			if ( args.buttonType ) {
 				output.classList.add( 'button' );
+
+				if ( ! args.noDismiss && -1 !== [ 'red', 'primary' ].indexOf( args.buttonType ) ) {
+					// Primary and red buttons close modals by default on click.
+					// To disable this default behaviour you can use the noDismiss: 1 arg.
+					output.classList.add( 'dismiss' );
+				}
+
 				switch ( args.buttonType ) {
+					case 'red':
+						output.classList.add( 'frm-button-red', 'frm-button-primary' );
+						break;
 					case 'primary':
 						output.classList.add( 'button-primary', 'frm-button-primary' );
-						if ( ! args.noDismiss ) {
-							output.classList.add( 'dismiss' );
-						}
 						break;
 					case 'secondary':
 						output.classList.add( 'button-secondary', 'frm-button-secondary' );
@@ -100,21 +110,28 @@
 
 	const ajax = {
 		doJsonFetch: async function( action ) {
-			const response = await fetch( ajaxurl + '?action=frm_' + action );
+			let targetUrl = ajaxurl + '?action=frm_' + action;
+			if ( -1 === targetUrl.indexOf( 'nonce=' ) ) {
+				targetUrl += '&nonce=' + frmGlobal.nonce;
+			}
+			const response = await fetch( targetUrl );
 			const json = await response.json();
 			if ( ! json.success ) {
 				return Promise.reject( json.data || 'JSON result is not successful' );
 			}
 			return Promise.resolve( json.data );
 		},
-		doJsonPost: async function( action, formData ) {
+		doJsonPost: async function( action, formData, { signal } = {}) {
 			formData.append( 'nonce', frmGlobal.nonce );
 			const init = {
 				method: 'POST',
 				body: formData
 			};
+			if ( signal ) {
+				init.signal = signal;
+			}
 			const response = await fetch( ajaxurl + '?action=frm_' + action, init );
-			const json = await response.json();
+			const json     = await response.json();
 			if ( ! json.success ) {
 				return Promise.reject( json.data || 'JSON result is not successful' );
 			}
@@ -124,12 +141,11 @@
 
 	const multiselect = {
 		init: function() {
-			let $select, id, labelledBy;
+			const $select = jQuery( this );
+			const id = $select.is( '[id]' ) ? $select.attr( 'id' ).replace( '[]', '' ) : false;
 
-			$select = jQuery( this );
-			id = $select.is( '[id]' ) ? $select.attr( 'id' ).replace( '[]', '' ) : false;
-			labelledBy = id ? jQuery( '#for_' + id ) : false;
-			labelledBy = id && labelledBy.length ? 'aria-labelledby="' + labelledBy.attr( 'id' ) + '"' : '';
+			let labelledBy = id ? jQuery( '#for_' + id ) : false;
+			labelledBy     = id && labelledBy.length ? 'aria-labelledby="' + labelledBy.attr( 'id' ) + '"' : '';
 
 			$select.multiselect({
 				templates: {
@@ -148,9 +164,32 @@
 							}
 						});
 					}
+
+					const $dropdown = $select.next( '.frm-btn-group.dropdown' );
+					$dropdown.find( '.dropdown-item' ).each(
+						function() {
+							const option         = this;
+							const dropdownInput  = option.querySelector( 'input[type="checkbox"], input[type="radio"]' );
+							if ( dropdownInput ) {
+								option.setAttribute( 'role', 'checkbox' );
+								option.setAttribute( 'aria-checked', dropdownInput.checked ? 'true' : 'false' );
+							}
+						}
+					);
 				},
-				onChange: function( element, option ) {
-					$select.trigger( 'frm-multiselect-changed', element, option );
+				onChange: function( $option, checked ) {
+					$select.trigger( 'frm-multiselect-changed', $option, checked );
+
+					const $dropdown     = $select.next( '.frm-btn-group.dropdown' );
+					const optionValue   = $option.val();
+					const $dropdownItem = $dropdown.find( 'input[value="' + optionValue + '"]' ).closest( 'button.dropdown-item' );
+					if ( $dropdownItem.length ) {
+						$dropdownItem.attr( 'aria-checked', checked ? 'true' : 'false' );
+
+						// Delay a focus event so the screen reader reads the option value again.
+						// Without this, and without the setTimeout, it only reads "checked" or "unchecked".
+						setTimeout( () => $dropdownItem.get( 0 ).focus(), 0 );
+					}
 				}
 			});
 		}
@@ -267,7 +306,7 @@
 						jQuery( this ).autocomplete( 'search', this.value );
 					}
 				})
-				.data('ui-autocomplete')._renderItem = function( ul, item ) {
+				.data( 'ui-autocomplete' )._renderItem = function( ul, item ) {
 					return jQuery( '<li>' )
 					.attr( 'aria-label', item.label )
 					.append( jQuery( '<div>' ).text( item.label ) )
@@ -317,7 +356,7 @@
 			search.init( input, targetClassName, args );
 
 			function getAutoSearchInput( id, placeholder ) {
-				const className = 'frm-search-input frm-auto-search';
+				const className = 'frm-search-input frm-auto-search frm-w-full';
 				const inputArgs = { id, className };
 				const input = tag( 'input', inputArgs );
 				input.setAttribute( 'placeholder', placeholder );
@@ -385,6 +424,142 @@
 				callback( event );
 			};
 			element.addEventListener( 'click', listener );
+		},
+
+		/**
+		 * Does the same as jQuery( document ).on( 'event', 'selector', handler ).
+		 *
+		 * @since 6.0
+		 *
+		 * @param {String}         event    Event name.
+		 * @param {String}         selector Selector.
+		 * @param {Function}       handler  Handler.
+		 * @param {Boolean|Object} options  Options to be added to `addEventListener()` method. Default is `false`.
+		 */
+		documentOn: ( event, selector, handler, options ) => {
+			if ( 'undefined' === typeof options ) {
+				options = false;
+			}
+
+			document.addEventListener( event, function( e ) {
+				let target;
+
+				// loop parent nodes from the target to the delegation node.
+				for ( target = e.target; target && target != this; target = target.parentNode ) {
+					if ( target && target.matches && target.matches( selector ) ) {
+						handler.call( target, e );
+						break;
+					}
+				}
+			}, options );
+		}
+	};
+
+	const wysiwyg = {
+		init( editor, { setupCallback, height, addFocusEvents } = {}) {
+			if ( isTinyMceActive() ) {
+				setTimeout( resetTinyMce, 0 );
+			} else {
+				initQuickTagsButtons();
+			}
+
+			setUpTinyMceVisualButtonListener();
+			setUpTinyMceHtmlButtonListener();
+
+			function initQuickTagsButtons() {
+				if ( 'function' !== typeof window.quicktags || typeof window.QTags.instances[ editor.id ] !== 'undefined' ) {
+					return;
+				}
+
+				const id = editor.id;
+				window.quicktags({
+					name: 'qt_' + id,
+					id: id,
+					canvas: editor,
+					settings: { id },
+					toolbar: document.getElementById( 'qt_' + id + '_toolbar' ),
+					theButtons: {}
+				});
+			}
+
+			function initRichText() {
+				const key = Object.keys( tinyMCEPreInit.mceInit )[0];
+				const orgSettings = tinyMCEPreInit.mceInit[ key ];
+
+				const settings = Object.assign(
+					{},
+					orgSettings,
+					{
+						selector: '#' + editor.id,
+						body_class: orgSettings.body_class.replace( key, editor.id )
+					}
+				);
+
+				settings.setup = editor => {
+					if ( addFocusEvents ) {
+						function focusInCallback() {
+							jQuery( editor.targetElm ).trigger( 'focusin' );
+							editor.off( 'focusin', '**' );
+						}
+
+						editor.on( 'focusin', focusInCallback );
+
+						editor.on( 'focusout', function() {
+							editor.on( 'focusin', focusInCallback );
+						});
+					}
+					if ( setupCallback ) {
+						setupCallback( editor );
+					}
+				};
+
+				if ( height ) {
+					settings.height = height;
+				}
+
+				tinymce.init( settings );
+			}
+
+			function removeRichText() {
+				tinymce.EditorManager.execCommand( 'mceRemoveEditor', true, editor.id );
+			}
+
+			function resetTinyMce() {
+				removeRichText();
+				initRichText();
+			}
+
+			function isTinyMceActive() {
+				const id = editor.id;
+				const wrapper = document.getElementById( 'wp-' + id + '-wrap' );
+				return null !== wrapper && wrapper.classList.contains( 'tmce-active' );
+			}
+
+			function setUpTinyMceVisualButtonListener() {
+				jQuery( document ).on(
+					'click', '#' + editor.id + '-html',
+					function() {
+						editor.style.visibility = 'visible';
+						initQuickTagsButtons( editor );
+					}
+				);
+			}
+
+			function setUpTinyMceHtmlButtonListener() {
+				jQuery( '#' + editor.id + '-tmce' ).on( 'click', handleTinyMceHtmlButtonClick );
+			}
+
+			function handleTinyMceHtmlButtonClick() {
+				if ( isTinyMceActive() ) {
+					resetTinyMce();
+				} else {
+					initRichText();
+				}
+
+				const wrap = document.getElementById( 'wp-' + editor.id + '-wrap' );
+				wrap.classList.add( 'tmce-active' );
+				wrap.classList.remove( 'html-active' );
+			}
 		}
 	};
 
@@ -413,6 +588,8 @@
 	}
 
 	function makeModalIntoADialogAndOpen( modal, { width } = {}) {
+		const bodyWithModalClassName = 'frm-body-with-open-modal';
+
 		const $modal = jQuery( modal );
 		if ( ! $modal.hasClass( 'frm-dialog' ) ) {
 			$modal.dialog({
@@ -447,14 +624,15 @@
 					}
 				},
 				close: function() {
-					document.body.style.overflowY = 'initial';
+					document.body.classList.remove( bodyWithModalClassName );
 					jQuery( '#wpwrap' ).removeClass( 'frm_overlay' );
 					jQuery( '.spinner' ).css( 'visibility', 'hidden' );
 				}
 			});
 		}
 
-		document.body.style.overflowY = 'hidden';
+		document.body.classList.add( bodyWithModalClassName );
+
 		$modal.dialog( 'open' );
 		return $modal;
 	}
@@ -484,6 +662,33 @@
 		return output;
 	}
 
+	/**
+	 * Get a labelled text input and a matching label.
+	 *
+	 * @since 6.0
+	 *
+	 * @param {String} inputId
+	 * @param {String} labelText
+	 * @param {String} inputName
+	 * @returns {Element}
+	 */
+	function labelledTextInput( inputId, labelText, inputName ) {
+		const label = tag( 'label', labelText );
+		label.setAttribute( 'for', inputId );
+
+		const input = tag(
+			'input',
+			{
+				id: inputId,
+				className: 'frm_long_input'
+			}
+		);
+		input.type = 'text';
+		input.setAttribute( 'name', inputName );
+
+		return div({ children: [ label, input ] });
+	}
+
 	function tag( type, args = {}) {
 		const output = document.createElement( type );
 
@@ -493,7 +698,7 @@
 			return output;
 		}
 
-		const { id, className, children, child, text } = args;
+		const { id, className, children, child, text, data } = args;
 
 		if ( id ) {
 			output.id = id;
@@ -508,12 +713,21 @@
 		} else if ( text ) {
 			output.textContent = text;
 		}
+		if ( data ) {
+			Object.keys( data ).forEach( function( dataKey ) {
+				output.setAttribute( 'data-' + dataKey, data[dataKey] );
+			});
+		}
 		return output;
 	}
 
-	function svg({ href } = {}) {
+	function svg({ href, classList } = {}) {
 		const namespace = 'http://www.w3.org/2000/svg';
 		const output = document.createElementNS( namespace, 'svg' );
+		if ( classList ) {
+			output.classList.add( ...classList );
+		}
+
 		if ( href ) {
 			const use = document.createElementNS( namespace, 'use' );
 			use.setAttribute( 'href', href );
@@ -521,6 +735,30 @@
 			output.classList.add( 'frmsvg' );
 		}
 		return output;
+	}
+
+	/**
+	 * Pop up a success message in the lower right corner.
+	 * It then fades out and gets deleted automatically.
+	 *
+	 * @param {HTMLElement|String} content
+	 * @returns {void}
+	 */
+	function success( content ) {
+		const container           = document.getElementById( 'wpbody' );
+		const notice              = div({
+			className: 'notice notice-info frm-review-notice frm_updated_message frm-floating-success-message',
+			child: div({
+				className: 'frm-satisfied',
+				child: 'string' === typeof content ? document.createTextNode( content ) : content
+			})
+		});
+		container.appendChild( notice );
+
+		setTimeout(
+			() => jQuery( notice ).fadeOut( () => notice.remove() ),
+			2000
+		);
 	}
 
 	function setAttributes( element, attrs ) {
@@ -534,5 +772,5 @@
 		element.appendChild( child );
 	}
 
-	window.frmDom = { tag, div, span, a, img, svg, setAttributes, modal, ajax, bootstrap, autocomplete, search, util };
+	window.frmDom = { tag, div, span, a, img, labelledTextInput, svg, setAttributes, success, modal, ajax, bootstrap, autocomplete, search, util, wysiwyg };
 }() );

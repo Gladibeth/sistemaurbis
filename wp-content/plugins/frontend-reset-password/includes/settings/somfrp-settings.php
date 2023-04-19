@@ -33,7 +33,7 @@ function somfrp_plugin_row_meta( $links, $file ) {
 	if ( SOMFRP_PLUGIN_BASENAME == $file ) {
 		$new_links = array(
 			'donate' => '<a href="' . somfrp_get_donate_link() . '" target="_blank">Donate</a>',
-			'more' => '<a href="https://profiles.wordpress.org/squareonemedia/#content-plugins" target="_blank">More Plugins</a>'
+			'more' => '<a href="https://profiles.wordpress.org/wpenhanced/" target="_blank">More Plugins</a>'
 		);
 		$links = array_merge( $links, $new_links );
 	}
@@ -317,6 +317,7 @@ function somfrp_settings_more() {
 	$somdn_logo = plugins_url( '/assets/images/somdn.jpg', SOMFRP_FILE );
 	$responsive_youtube = plugins_url( '/assets/images/responsive-youtube.jpg', SOMFRP_FILE );
 
+
 	?>
 
 	<div class="som-settings-container" style="padding-top: 10px;">
@@ -324,12 +325,12 @@ function somfrp_settings_more() {
 		
 			<div class="som-settings-col-12 som-settings-guide">
 
-				<p style="padding-bottom: 25px;">Looking for more plugins by <strong>Square One Media?</strong></p>
+				<p style="padding-bottom: 25px;">Looking for more plugins by <strong>WP Enhanced?</strong></p>
 
 				<div class="som-settings-plugin-other-wrap">
 
 					<div class="som-settings-plugin-other">
-						<a class="som-settings-plugin-other-link" href="https://squareonemedia.co.uk/products/free-downloads-woocommerce/" target="_blank">
+						<a class="som-settings-plugin-other-link" href="https://wordpress.org/plugins/download-now-for-woocommerce/" target="_blank">
 							<div class="som-settings-plugin-other-img">
 								<img src="<?php echo $somdn_logo; ?>">
 							</div>
@@ -340,7 +341,7 @@ function somfrp_settings_more() {
 					</div>
 					
 					<div class="som-settings-plugin-other">
-						<a class="som-settings-plugin-other-link" href="https://squareonemedia.co.uk/products/responsive-videos/" target="_blank">
+						<a class="som-settings-plugin-other-link" href="https://wordpress.org/plugins/responsive-youtube-videos/" target="_blank">
 							<div class="som-settings-plugin-other-img">
 								<img src="<?php echo $responsive_youtube; ?>">
 							</div>
@@ -499,7 +500,6 @@ function somfrp_settings_init() {
 	);
 
 	register_setting( 'somfrp_security_settings', 'somfrp_security_settings' );
-
 	add_settings_section(
 		'somfrp_security_settings_section',
 		__( 'Security Settings', 'frontend-reset-password' ),

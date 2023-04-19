@@ -16,12 +16,30 @@
 
 				//Initialize Form Builder.
 				URFormBuilder.init_form_builder();
-
+				//Field option tab
+				$(document).on(
+					"click",
+					'ul.ur-tab-lists li[aria-controls="ur-tab-field-options"]',
+					function () {
+						// Hide the form settings in fields panel.
+						$(".ur-selected-inputs")
+							.find("form#ur-field-settings")
+							.hide();
+						//Show field panels
+						$(".ur-builder-wrapper-content").show();
+						$(".ur-builder-wrapper-footer").show();
+						if ($(".ur-selected-item.ur-item-active").length == 0) {
+							//Selecting first ur selected item
+							URFormBuilder.handle_selected_item(
+								$(".ur-selected-item:first")
+							);
+						}
+					}
+				);
 				// Handle the field settings when a field is selected in the form builder.
 				$(document).on("click", ".ur-selected-item", function () {
 					URFormBuilder.handle_selected_item($(this));
 				});
-
 				// Run keyboard shortcuts action in form builder area only.
 				if (user_registration_form_builder_data.is_form_builder) {
 					$(window).on("keydown", function (event) {
@@ -122,14 +140,111 @@
 					var urlParams = new URLSearchParams(queryString);
 					var urPage = urlParams.get("page");
 					var isEditPage = urlParams.get("edit-registration");
+					var isTemplatePage = $(".user-registration-setup").length;
+
+					var previousPage = document.referrer.split("page=")[1];
 
 					if (
 						"add-new-registration" === urPage &&
-						null === isEditPage
+						(null === isEditPage ||
+							(null !== isEditPage &&
+								"add-new-registration" === previousPage)) &&
+						0 === isTemplatePage
 					) {
 						URFormBuilder.ur_show_help();
 					}
 				});
+
+				// Toggle `Bulk Add` option.
+				$(document.body).on(
+					"click",
+					".ur-toggle-bulk-options",
+					function (e) {
+						e.preventDefault();
+						$this = $(this);
+
+						var bulk_options_html = "";
+						bulk_options_html +=
+							'<div class="ur-bulk-options-container">';
+						bulk_options_html +=
+							'<div class="ur-general-setting ur-setting-textarea ur-general-setting-bulk-options ur-bulk-options-container"><label for="ur-type-textarea">' +
+							$this.data("bulk-options-label") +
+							'<span class="ur-portal-tooltip tooltipstered" data-tip="' +
+							$this.data("bulk-options-tip") +
+							'"></span></label>';
+						bulk_options_html +=
+							'<textarea data-field="description" class="ur-general-setting-field ur-type-textarea"></textarea></div>';
+						bulk_options_html +=
+							'<a class="button button-small ur-add-bulk-options" href="#">' +
+							$this.data("bulk-options-button") +
+							"</a></div>";
+
+						if (
+							$this.parent().next(".ur-bulk-options-container")
+								.length
+						) {
+							if (
+								$this
+									.parent()
+									.next(".ur-bulk-options-container")
+									.css("display") === "none"
+							) {
+								$this
+									.parent()
+									.next(".ur-bulk-options-container")
+									.show();
+							} else {
+								$this
+									.parent()
+									.next(".ur-bulk-options-container")
+									.hide();
+							}
+						} else {
+							$(bulk_options_html)
+								.insertAfter($this.parent())
+								.trigger("init_tooltips");
+						}
+					}
+				);
+
+				// Add custom list of options.
+				$(document.body).on(
+					"click",
+					".ur-add-bulk-options",
+					function (e) {
+						e.preventDefault();
+						var options = $(this).parent().next(".ur-options-list");
+						var bulk_options_container = $(this).parent(
+							".ur-bulk-options-container"
+						);
+						if (options.length) {
+							var options_texts = bulk_options_container
+								.find(".ur-type-textarea")
+								.val()
+								.replace(/<\/?[^>]+(>|$)/g, "")
+								.split("\n");
+
+							options_texts = $.unique(options_texts);
+
+							options_texts.forEach(function (option_text) {
+								if ("" !== option_text) {
+									var $add_button = options
+										.find("li")
+										.last()
+										.find("a.add");
+
+									URFormBuilder.add_choice_field_option(
+										$add_button,
+										option_text.trim()
+									);
+								}
+							});
+							bulk_options_container
+								.find(".ur-type-textarea")
+								.val("");
+						}
+					}
+				);
 			},
 			init_user_profile_modal: function () {
 				var user_profile_modal = {
@@ -168,6 +283,9 @@
 				if (validation_response.validation_status === false) {
 					URFormBuilder.show_message(validation_response.message);
 					return;
+				}
+				if (typeof tinyMCE !== "undefined") {
+					tinyMCE.triggerSave();
 				}
 
 				var form_data = URFormBuilder.get_form_data();
@@ -223,7 +341,19 @@
 					"user_registration_admin_before_form_submit",
 					[data]
 				);
-
+				// validation for unsupported currency by paypal.
+				if (
+					typeof data.data.ur_invalid_currency_status !==
+						"undefined" &&
+					data.data.ur_invalid_currency_status[0]
+						.validation_status === false
+				) {
+					URFormBuilder.show_message(
+						data.data.ur_invalid_currency_status[0]
+							.validation_message
+					);
+					return;
+				}
 				$.ajax({
 					url: user_registration_form_builder_data.ajax_url,
 					data: data,
@@ -800,6 +930,7 @@
 						message +
 						'</p><span class="dashicons dashicons-no-alt ur-message-close"></span></div></div>';
 				} else {
+					$(".ur-error").remove();
 					message_string =
 						'<div class="ur-message"><div class="ur-error"><p><strong>' +
 						user_registration_form_builder_data.i18n_admin
@@ -816,7 +947,7 @@
 
 				setTimeout(function () {
 					URFormBuilder.removeMessage($message);
-				}, 2000);
+				}, 3000);
 			},
 			/**
 			 * Remove the validation message when calles.
@@ -1149,13 +1280,13 @@
 						subject: email_body_item
 							.find(".uret_subject_input")
 							.val(),
-						content: tinymce
-							.get(
-								"user_registration_" +
+						content: email_body_item
+							.find(
+								"#user_registration_" +
 									$(this).prop("id") +
 									"_content"
 							)
-							.getContent(),
+							.val(),
 					};
 				});
 
@@ -1400,7 +1531,7 @@
 									.closest(".ur-selected-item")
 									.find(".ur-label")
 									.find("label");
-								label_node.find("span").remove();
+								label_node.find("span:contains('*')").remove();
 								label_node.append(
 									'<span style="color:red">*</span>'
 								);
@@ -1758,7 +1889,7 @@
 														);
 														single_row.remove();
 														$this.check_grid();
-														URFormBuilder.manage_draggable_users_fields();
+														builder.manage_draggable_users_fields();
 
 														Swal.fire({
 															icon: "success",
@@ -1937,14 +2068,12 @@
 											);
 											builder.manage_empty_grid();
 										},
-										revert: true,
 										connectWith: ".ur-grid-list-item",
 									})
 									.disableSelection();
 								$(".ur-input-grids").sortable({
 									containment: ".ur-builder-wrapper",
 									tolerance: "pointer",
-									revert: "invalid",
 									placeholder: "ur-single-row",
 									forceHelperSize: true,
 									over: function () {
@@ -1973,7 +2102,6 @@
 														)
 												);
 										},
-										revert: "invalid",
 										// start: function (event, ui) {
 										// },
 										stop: function (event, ui) {
@@ -2101,6 +2229,10 @@
 															'"]'
 													).remove();
 
+													$(document.body).trigger(
+														"ur_field_removed"
+													);
+
 													// To prevent click on whole item.
 													return false;
 												},
@@ -2190,14 +2322,6 @@
 									.find("a")
 									.eq(0)
 									.trigger("click", ["triggered_click"]);
-								$(".ur-tabs")
-									.find(
-										'[aria-controls="ur-tab-field-options"]'
-									)
-									.addClass("ur-no-pointer");
-								$(".ur-selected-item").removeClass(
-									"ur-item-active"
-								);
 							},
 						};
 						builder.init();
@@ -2322,9 +2446,6 @@
 			 * Handles all the operations performed on a selected field.
 			 */
 			handle_selected_item: function (selected_item) {
-				$(".ur-registered-inputs")
-					.find("ul li.ur-no-pointer")
-					.removeClass("ur-no-pointer");
 				$(".ur-selected-item").removeClass("ur-item-active");
 				$(selected_item).addClass("ur-item-active");
 				URFormBuilder.render_advance_setting($(selected_item));
@@ -2492,6 +2613,7 @@
 
 				$(document.body).trigger("ur_rendered_field_options");
 				$(document.body).trigger("init_tooltips");
+				$(document.body).trigger("init_field_options_toggle");
 			},
 			/**
 			 * Render the advance setting for selected field.
@@ -2510,7 +2632,7 @@
 				form.append(general_setting);
 				form.append(advance_setting);
 				$("#ur-tab-field-options").append(form);
-				//$('#ur-tab-field-options').append(advance_setting);
+				// $("#ur-tab-field-options").append(advance_setting);
 				$("#ur-tab-field-options")
 					.find(".ur-advance-setting-block")
 					.show();
@@ -2698,7 +2820,6 @@
 							.addClass("flatpickr-field")
 							.flatpickr({
 								disableMobile: true,
-								static: true,
 								onChange: function (
 									selectedDates,
 									dateStr,
@@ -2728,7 +2849,6 @@
 							.addClass("flatpickr-field")
 							.flatpickr({
 								disableMobile: true,
-								static: true,
 								onChange: function (
 									selectedDates,
 									dateStr,
@@ -2784,7 +2904,6 @@
 									.addClass("flatpickr-field")
 									.flatpickr({
 										disableMobile: true,
-										static: true,
 										defaultDate: new Date(
 											$(".ur-item-active")
 												.find(".ur-settings-min-date")
@@ -2833,7 +2952,6 @@
 									.addClass("flatpickr-field")
 									.flatpickr({
 										disableMobile: true,
-										static: true,
 										defaultDate: new Date(
 											$(".ur-item-active")
 												.find(".ur-settings-max-date")
@@ -3126,6 +3244,10 @@
 						.find("input.ur-type-radio-label")
 						.val();
 					value = value.trim();
+
+					// To remove all HTML tags from a value.
+					value = value.replace(/<\/?[^>]+(>|$)/g, "");
+
 					radio = $(element)
 						.find("input.ur-type-radio-value")
 						.is(":checked");
@@ -3191,6 +3313,21 @@
 						.find("input.ur-type-checkbox-label")
 						.val();
 					value = value.trim();
+
+					// To remove all HTML tags (opening or closing or self closing)from a string except for anchor tags.
+					value = value.replace(/<(?!\/?a\b)[^>]+>/gi, "");
+
+					// To remove attributes except "href, target, download, rel, hreflang, type, name, accesskey, tabindex, title" from anchor tag.
+					value = value.replace(
+						/(?!href|target|download|rel|hreflang|type|name|accesskey|tabindex|title)\b\w+=['"][^'"]*['"]/g,
+						""
+					);
+
+					// To add a closing </a> tag to a string if an open <a> tag is present but not closed.
+					if (/<a(?:(?!<\/a>).)*$/.test(value)) {
+						value += "</a>";
+					}
+
 					checkbox = $(element)
 						.find("input.ur-type-checkbox-value")
 						.is(":checked");
@@ -3210,6 +3347,10 @@
 
 				for (var i = 0; i < array_value.length; i++) {
 					if (array_value[i] !== "") {
+						array_value[i].value = array_value[i].value.replaceAll(
+							'"',
+							"'"
+						);
 						checkbox.append(
 							'<label><input value="' +
 								array_value[i].value.trim() +
@@ -3416,7 +3557,6 @@
 			 */
 			trigger_general_setting_required: function ($label) {
 				var wrapper = $(".ur-selected-item.ur-item-active");
-
 				wrapper
 					.find(".ur-general-setting-block")
 					.find(
@@ -3424,9 +3564,16 @@
 							$label.attr("data-field") +
 							'"] option:selected'
 					)
-					.removeAttr("selected");
+					.attr("selected", false);
 
-				wrapper.find(".ur-label").find("label").find("span").remove();
+				$label.find("option").attr("selected", false);
+
+				wrapper
+					.find(".ur-label")
+					.find("label")
+					.find("span:contains(*)")
+					.remove();
+
 				if ($label.val() === "yes") {
 					wrapper
 						.find(".ur-label")
@@ -3438,6 +3585,10 @@
 					.find(
 						'select[data-field="' + $label.attr("data-field") + '"]'
 					)
+					.find('option[value="' + $label.val() + '"]')
+					.attr("selected", true);
+
+				$label
 					.find('option[value="' + $label.val() + '"]')
 					.attr("selected", true);
 			},
@@ -3484,6 +3635,7 @@
 					.find('option[value="' + $label.val() + '"]')
 					.attr("selected", true);
 			},
+
 			/**
 			 * Reflects changes in hide advance settings of field settings into selected field in form builder area.
 			 *
@@ -3510,7 +3662,7 @@
 								.find(
 									'option[value="' + $this_node.val() + '"]'
 								)
-								.attr("selected", "selected");
+								.prop("selected", true);
 						}
 						break;
 					case "textarea":
@@ -3614,13 +3766,16 @@
 			 * Add a new option in choice field when called.
 			 *
 			 * @param object $this_obj The field option to add.
+			 * @param string value The value of the option.
 			 */
-			add_choice_field_option: function ($this) {
+			add_choice_field_option: function ($this, value) {
 				var $wrapper = $(".ur-selected-item.ur-item-active"),
 					this_index = $this.parent("li").index(),
 					cloning_element = $this.parent("li").clone(true, true);
 
-				cloning_element.find('input[data-field="options"]').val("");
+				cloning_element
+					.find('input[data-field="options"]')
+					.val(typeof value !== "undefined" ? value : "");
 				cloning_element
 					.find('input[data-field="default_value"]')
 					.prop("checked", false);
@@ -3706,7 +3861,7 @@
 		$(document).ready(function () {
 			var date_flatpickrs = {};
 
-			$(document.body).on("click", "#load_flatpickr", function () {
+			$(document.body).on("click", ".ur-flatpickr-field", function () {
 				var field_id = $(this).data("id");
 				var date_flatpickr = date_flatpickrs[field_id];
 
@@ -3772,23 +3927,35 @@
 				}
 			});
 		});
-
 		/**
 		 * For toggling headings.
 		 */
-
 		$(document).on("click", ".ur-toggle-heading", function () {
 			if ($(this).hasClass("closed")) {
 				$(this).removeClass("closed");
 			} else {
 				$(this).addClass("closed");
 			}
+			$(this)
+				.parent(".user-registration-field-option-group")
+				.toggleClass("closed")
+				.toggleClass("open");
 			var field_list = $(this).find(" ~ .ur-registered-list")[0];
 			$(field_list).slideToggle();
 
 			// For `Field Options` section
-			$(this).siblings(".ur-toggle-content").slideToggle();
+			$(this).siblings(".ur-toggle-content").stop().slideToggle();
 		});
+
+		$(document.body)
+			.on("init_field_options_toggle", function () {
+				$(".user-registration-field-option-group.closed").each(
+					function () {
+						$(this).find(".ur-toggle-content").hide();
+					}
+				);
+			})
+			.trigger("init_field_options_toggle");
 
 		/**
 		 * For toggling quick links content.

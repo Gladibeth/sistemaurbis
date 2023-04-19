@@ -11,6 +11,7 @@
 	'use strict';
 
 	WP_Smush.helpers = {
+		cacheUpsellErrorCodes: [],
 		init: () => {},
 
 		/**
@@ -128,6 +129,165 @@
 			};
 			xhr.send( '_ajax_nonce=' + _nonce.value );
 		},
+
+		/**
+		 * Prepare error row. Will only allow to hide errors for WP media attachments (not nextgen).
+		 *
+		 * @since 1.9.0
+		 * @since 3.12.0 Moved from Smush.
+		 *
+		 * @param {string} errorMsg   Error message.
+		 * @param {string} fileName   File name.
+		 * @param {string} thumbnail  Thumbnail for image (if available).
+		 * @param {number} id         Image ID.
+		 * @param {string} type       Smush type: media or netxgen.
+		 * @param {string} errorCode  Error code.
+		 *
+		 * @return {string}  Row with error.
+		 */
+		 prepareBulkSmushErrorRow: (errorMsg, fileName, thumbnail, id, type, errorCode) => {
+			const thumbDiv =
+				'undefined' === typeof thumbnail ?
+				'<i class="sui-icon-photo-picture" aria-hidden="true"></i>' :
+				thumbnail;
+			const editLink = window.wp_smush_msgs.edit_link.replace('{{id}}', id);
+			const fileLink =
+				'undefined' === fileName || 'undefined' === typeof fileName ?
+				'undefined' :
+				fileName;
+
+			let tableDiv =
+				'<div class="smush-bulk-error-row" data-error-code="'+ errorCode + '">' +
+				'<div class="smush-bulk-image-data">' +
+				'<div class="smush-bulk-image-title">' +
+				thumbDiv +
+				'<span class="smush-image-name">' +
+				fileLink +
+				'</span>' +
+				'</div>' +
+				'<div class="smush-image-error">' +
+				errorMsg +
+				'</div>' +
+				'</div>';
+
+			if ('media' === type) {
+				tableDiv =
+					tableDiv +
+					'<div class="smush-bulk-image-actions">' +
+					'<a href="javascript:void(0)" class="sui-tooltip sui-tooltip-constrained sui-tooltip-left smush-ignore-image" data-tooltip="' +
+					window.wp_smush_msgs.error_ignore +
+					'" data-id="' +
+					id +
+					'">' +
+					window.wp_smush_msgs.btn_ignore +
+					'</a>' +
+					'<a class="smush-link-detail" href="' + editLink + '">' +
+						window.wp_smush_msgs.view_detail +
+					'</a>' +
+				'</div>';
+			}
+
+			tableDiv = tableDiv + '</div>';
+
+			tableDiv += WP_Smush.helpers.upsellWithError(errorCode);
+
+			return tableDiv;
+		},
+		/**
+		 * Get upsell base on error code.
+		 * @param {string} errorCode Error code.
+		 * @returns {string}
+		 *
+		 * Do not use arrow function to use `this`.
+		 */
+		upsellWithError: function (errorCode) {
+			if (!errorCode || !window.wp_smush_msgs['error_' + errorCode] || this.isUpsellRendered( errorCode )) {
+				return '';
+			}
+			this.cacheRenderedUpsell( errorCode );
+			return '<div class="smush-bulk-error-row smush-error-upsell">' +
+				'<div class="smush-bulk-image-title">' +
+				'<span class="smush-image-error">' +
+				window.wp_smush_msgs['error_' + errorCode] +
+				'</span>' +
+				'</div></div>';
+		},
+		// Do not use arrow function to use `this`.
+		isUpsellRendered: function( errorCode ) {
+			return this.cacheUpsellErrorCodes.includes( errorCode );
+		},
+		// Do not use arrow function to use `this`.
+		cacheRenderedUpsell: function ( errorCode ) {
+			this.cacheUpsellErrorCodes.push( errorCode );
+		},
+		/**
+		 * Get error message from Ajax response or Error. 
+		 * @param {Object} resp
+		 */
+		getErrorMessage: ( resp ) => {
+			return resp.message || resp.data && resp.data.message ||
+				resp.responseJSON && resp.responseJSON.data && resp.responseJSON.data.message ||
+				window.wp_smush_msgs.generic_ajax_error ||
+				resp.status && 'Request failed. Returned status of ' + resp.status
+		},
+
+		/**
+		 * Displays a floating message from response,
+		 * using the #wp-smush-ajax-notice container.
+		 *
+		 * @param {Object|string} notice
+		 * @param {Object} 		  noticeOptions
+		 */
+		showNotice: function( notice, noticeOptions ) {
+			let message;
+			if ( 'object' === typeof notice ) {
+				message = this.getErrorMessage( notice );
+			} else {
+				message = notice;
+			}
+
+			if ( ! message ) {
+				return;
+			}
+
+			noticeOptions = noticeOptions || {};
+			noticeOptions = Object.assign({
+				showdismiss: false,
+				autoclose: true,
+			},noticeOptions);
+			noticeOptions = {
+				type: noticeOptions.type || 'error',
+				icon: noticeOptions.icon || ( 'success' === noticeOptions.type ? 'check-tick' : 'info' ),
+				dismiss: {
+					show: noticeOptions.showdismiss,
+					label: window.wp_smush_msgs.noticeDismiss,
+					tooltip: window.wp_smush_msgs.noticeDismissTooltip,
+				},
+				autoclose: {
+					show: noticeOptions.autoclose
+				}
+			};
+
+			const noticeMessage = `<p>${ message }</p>`;
+
+			SUI.openNotice( 'wp-smush-ajax-notice', noticeMessage, noticeOptions );
+			return Promise.resolve( '#wp-smush-ajax-notice' );
+		},
+		renderActivationCDNNotice: function( noticeMessage ) {
+			const animatedNotice = document.getElementById('wp-smush-animated-upsell-notice');
+			if ( animatedNotice ) {
+				return;
+			}
+			const upsellHtml = `<div class="sui-notice sui-notice-info sui-margin-top" id="wp-smush-animated-upsell-notice">
+									<div class="sui-notice-content">
+										<div class="sui-notice-message">
+											<i class="sui-notice-icon sui-icon-info" aria-hidden="true"></i>
+											<p>${noticeMessage}</p>
+										</div>
+									</div>
+								</div>`;
+			document.querySelector( '#smush-box-bulk .wp-smush-bulk-wrapper' ).outerHTML += upsellHtml;
+		}
 	};
 
 	WP_Smush.helpers.init();

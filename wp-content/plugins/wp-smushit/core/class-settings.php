@@ -74,6 +74,7 @@ class Settings {
 		'background_images' => true,
 		'rest_api_support'  => false, // CDN option.
 		'webp_mod'          => false, // WebP module.
+		'background_email'  => false,
 	);
 
 	/**
@@ -99,7 +100,14 @@ class Settings {
 	 *
 	 * @var array
 	 */
-	private $bulk_fields = array( 'bulk', 'auto', 'lossy', 'strip_exif', 'resize', 'original', 'backup', 'png_to_jpg', 'no_scale' );
+	private $bulk_fields = array( 'bulk', 'auto', 'lossy', 'strip_exif', 'resize', 'original', 'backup', 'png_to_jpg', 'no_scale', 'background_email' );
+
+	/**
+	 * @since 3.12.6
+	 *
+	 * Upsell fields.
+	 */
+	private $upsell_fields = array( 'background_email' );
 
 	/**
 	 * List of fields in integration form.
@@ -219,7 +227,21 @@ class Settings {
 	 * @return string
 	 */
 	public static function get_setting_data( $id, $type = '' ) {
+		$bg_optimization = WP_Smush::get_instance()->core()->mod->bg_optimization;
+		if ( $bg_optimization->can_use_background() ) {
+			$bg_email_desc = esc_html__( 'Be notified via email about the bulk smush status when the process has completed.', 'wp-smushit' );
+		} else {
+			$bg_email_desc = sprintf(
+				esc_html__( "Be notified via email about the bulk smush status when the process has completed. You'll receive an email at %s.", 'wp-smushit' ),
+				'<strong>'. $bg_optimization->get_mail_recipient() .'</strong>'
+			);
+		}
 		$settings = array(
+			'background_email'  => array(
+				'label'       => esc_html__( 'Enable email notification', 'wp-smushit' ),
+				'short_label' => esc_html__( 'Email Notification', 'wp-smushit' ),
+				'desc'        => $bg_email_desc,
+			),
 			'bulk'              => array(
 				'short_label' => esc_html__( 'Image Sizes', 'wp-smushit' ),
 				'desc'        => esc_html__( 'WordPress generates multiple image thumbnails for each image you upload. Choose which of those thumbnail sizes you want to include when bulk smushing.', 'wp-smushit' ),
@@ -335,6 +357,23 @@ class Settings {
 	 */
 	public function get_cdn_fields() {
 		return $this->cdn_fields;
+	}
+
+	public function is_upsell_field( $field ) {
+		return in_array( $field, $this->upsell_fields, true );
+	}
+
+	public function is_pro_field( $field ) {
+		return ! in_array( $field, self::$basic_features, true );
+	}
+
+	public function can_access_pro_field( $field ) {
+		if ( WP_Smush::is_pro() ) {
+			return true;
+		}
+
+		$bg_optimization = WP_Smush::get_instance()->core()->mod->bg_optimization;
+		return 'background_email' === $field && $bg_optimization->can_use_background();
 	}
 
 	/**
@@ -603,8 +642,9 @@ class Settings {
 	public function reset() {
 		check_ajax_referer( 'wp_smush_reset' );
 
-		if ( ! current_user_can( 'manage_options' ) ) {
-			die();
+		// Check capability.
+		if ( ! Helper::is_user_allowed( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Unauthorized', 'wp-smushit' ), 403 );
 		}
 
 		delete_site_option( 'wp-smush-networkwide' );
@@ -629,8 +669,12 @@ class Settings {
 	public function save_settings() {
 		check_ajax_referer( 'wp-smush-ajax' );
 
-		if ( ! is_user_logged_in() ) {
-			wp_send_json_error();
+		if ( ! Helper::is_user_allowed( 'manage_options' ) ) {
+			wp_send_json_error(
+				array(
+					'message' => esc_html__( "You don't have permission to do this.", 'wp-smushit' ),
+				)
+			);
 		}
 
 		// Delete S3 alert flag, if S3 option is disabled again.

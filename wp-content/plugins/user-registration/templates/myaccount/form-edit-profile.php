@@ -19,10 +19,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-do_action( 'user_registration_before_edit_profile_form' ); ?>
+do_action( 'user_registration_before_edit_profile_form' );
+
+$user_id = get_current_user_id();
+$form_id = ur_get_form_id_by_userid( $user_id );
+?>
 
 <div class="ur-frontend-form login ur-edit-profile" id="ur-frontend-form">
-	<form class="user-registration-EditProfileForm edit-profile" action="" method="post" enctype="multipart/form-data">
+	<form class="user-registration-EditProfileForm edit-profile" action="" method="post" enctype="multipart/form-data" data-form-id="<?php echo esc_attr( $form_id ); ?>">
 		<div class="ur-form-row">
 			<div class="ur-form-grid">
 				<div class="user-registration-profile-fields">
@@ -37,23 +41,22 @@ do_action( 'user_registration_before_edit_profile_form' ); ?>
 								$profile_picture_url = get_user_meta( get_current_user_id(), 'user_registration_profile_pic_url', true );
 
 								if ( is_numeric( $profile_picture_url ) ) {
-									$profile_picture_url  = wp_get_attachment_url( $profile_picture_url );
+									$profile_picture_url = wp_get_attachment_url( $profile_picture_url );
 								}
 
-								$image               = ( ! empty( $profile_picture_url ) ) ? $profile_picture_url : $gravatar_image;
+								$image           = ( ! empty( $profile_picture_url ) ) ? $profile_picture_url : $gravatar_image;
 								$max_size        = wp_max_upload_size();
 								$max_upload_size = $max_size;
+
+								$edit_profile_valid_file_type = 'image/jpeg,image/gif,image/png';
 
 								foreach ( $form_data_array as $data ) {
 									foreach ( $data as $grid_key => $grid_data ) {
 										foreach ( $grid_data as $grid_data_key => $single_item ) {
-											$edit_profile_valid_file_type = 'image/jpeg,image/jpg,image/gif,image/png';
 
-											if ( 'profile_picture' === $single_item->field_key ) {
-												if ( ! empty( $single_item->advance_setting->valid_file_type ) ) {
-													$edit_profile_valid_file_type = implode( ', ', $single_item->advance_setting->valid_file_type );
-												}
-												$max_upload_size = isset( $single_item->advance_setting->max_upload_size ) && '' !== $single_item->advance_setting->max_upload_size ? $single_item->advance_setting->max_upload_size : $max_size;
+											if ( isset( $single_item->field_key ) && 'profile_picture' === $single_item->field_key ) {
+												$edit_profile_valid_file_type = isset( $single_item->advance_setting->valid_file_type ) && '' !== $single_item->advance_setting->valid_file_type ? implode( ', ', $single_item->advance_setting->valid_file_type ) : $edit_profile_valid_file_type;
+												$max_upload_size              = isset( $single_item->advance_setting->max_upload_size ) && '' !== $single_item->advance_setting->max_upload_size ? $single_item->advance_setting->max_upload_size : $max_size;
 											}
 										}
 									}
@@ -88,17 +91,10 @@ do_action( 'user_registration_before_edit_profile_form' ); ?>
 											<input type="hidden" name="profile-pic-url" id="profile_pic_url" value="<?php echo esc_attr( $profile_picture_url ); ?>" />
 											<input type="hidden" name="profile-default-image" value="<?php echo esc_url( $gravatar_image ); ?>" />
 											<button class="button profile-pic-remove" data-attachment-id="<?php echo esc_attr( get_user_meta( get_current_user_id(), 'user_registration_profile_pic_url', true ) ); ?>" style="<?php echo esc_attr( ( $gravatar_image === $image ) ? 'display:none;' : '' ); ?>"><?php echo esc_html__( 'Remove', 'user-registration' ); ?></php></button>
+
+											<button type="button" class="button user_registration_profile_picture_upload hide-if-no-js" style="<?php echo esc_attr( ( $gravatar_image !== $image ) ? 'display:none;' : '' ); ?>" ><?php echo esc_html__( 'Upload Picture', 'user-registration' ); ?></button>
+											<input type="file" id="ur-profile-pic" name="profile-pic" class="profile-pic-upload" accept="image/jpeg,image/gif,image/png" style="display:none" />
 											<?php
-											if ( 'yes' === get_option( 'user_registration_ajax_form_submission_on_edit_profile', 'no' ) ) {
-												?>
-												<button type="button" class="button user_registration_profile_picture_upload hide-if-no-js" style="<?php echo esc_attr( ( $gravatar_image !== $image ) ? 'display:none;' : '' ); ?>" ><?php echo esc_html__( 'Upload Picture', 'user-registration' ); ?></button>
-												<input type="file" id="ur-profile-pic" name="profile-pic" class="profile-pic-upload" accept="image/jpeg,image/jpg,image/gif,image/png" style="display:none" />
-												<?php
-											} else {
-												?>
-												<input type="file" id="ur-profile-pic" name="profile-pic" class="profile-pic-upload" accept="image/jpeg,image/jpg,image/gif,image/png" style="<?php echo esc_attr( ( $gravatar_image !== $image ) ? 'display:none;' : '' ); ?>" />
-												<?php
-											}
 										}
 										?>
 
@@ -123,6 +119,10 @@ do_action( 'user_registration_before_edit_profile_form' ); ?>
 									$found_field = false;
 
 									foreach ( $grid_data as $grid_data_key => $single_item ) {
+										if ( ! isset( $single_item->general_setting->field_name ) ) {
+											continue;
+										}
+
 										$key = 'user_registration_' . $single_item->general_setting->field_name;
 										if ( isset( $single_item->field_key ) && isset( $profile[ $key ] ) ) {
 											$found_field = true;
@@ -135,6 +135,10 @@ do_action( 'user_registration_before_edit_profile_form' ); ?>
 									}
 
 									foreach ( $grid_data as $grid_data_key => $single_item ) {
+
+										if ( ! isset( $single_item->general_setting->field_name ) ) {
+											continue;
+										}
 
 										$key = 'user_registration_' . $single_item->general_setting->field_name;
 										if ( isset( $profile[ $key ] ) ) {
@@ -259,9 +263,6 @@ do_action( 'user_registration_before_edit_profile_form' ); ?>
 
 													$field['placeholder'] = $single_item->general_setting->placeholder;
 
-													if ( isset( $field['placeholder'] ) ) {
-														unset( $field['placeholder'] );
-													}
 												}
 
 												if ( 'radio' === $single_item->field_key ) {
@@ -290,6 +291,24 @@ do_action( 'user_registration_before_edit_profile_form' ); ?>
 
 													if ( isset( $advance_data['advance_setting']->valid_file_type ) ) {
 														$field['valid_file_type'] = $advance_data['advance_setting']->valid_file_type;
+													}
+
+													// Remove files attachment id from user meta if file is deleted by admin.
+													if ( '' !== $field['value'] ) {
+														$attachment_ids = is_array( $field['value'] ) ? $field['value'] : explode( ',', $field['value'] );
+
+														foreach ( $attachment_ids as $attachment_key => $attachment_id ) {
+															$attachment_url = get_attached_file( $attachment_id );
+
+															// Check to see if file actually exists or not.
+															if ( '' !== $attachment_url && file_exists( $attachment_url ) ) {
+																continue;
+															}
+															unset( $attachment_ids[ $attachment_key ] );
+														}
+
+														$field['value'] = ! empty( $attachment_ids ) ? implode( ',', $attachment_ids ) : '';
+														update_user_meta( get_current_user_id(), 'user_registration_' . $single_item->general_setting->field_name, $field['value'] );
 													}
 												}
 
@@ -356,7 +375,7 @@ do_action( 'user_registration_before_edit_profile_form' ); ?>
 												$field           = isset( $form_data_array['form_data'] ) ? $form_data_array['form_data'] : $field;
 												$value           = ! empty( $_POST[ $key ] ) ? ur_clean( wp_unslash( $_POST[ $key ] ) ) : $field['value']; // phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
-												user_registration_form_field( $key, $field, $value );
+												$field = user_registration_form_field( $key, $field, $value );
 
 												/**
 												 * Embed the current country value to allow to remove it if it's not allowed.

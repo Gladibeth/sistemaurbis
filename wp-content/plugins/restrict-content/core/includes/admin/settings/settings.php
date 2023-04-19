@@ -7,7 +7,8 @@
  * @copyright   Copyright (c) 2017, Restrict Content Pro
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  */
-
+use RCP\StellarWP\Telemetry\Core as Telemetry;
+use RCP\StellarWP\Telemetry\Opt_In\Status;
 /**
  * Register the plugins settings
  *
@@ -28,19 +29,22 @@ function rcp_settings_page() {
 	global $rcp_options;
 
 	$defaults = array(
-		'currency_position'     => 'before',
-		'currency'              => 'USD',
-		'registration_page'     => 0,
-		'redirect'              => 0,
-		'redirect_from_premium' => 0,
-		'login_redirect'        => 0,
-		'disable_trial_free_subs' => 0,
-		'email_header_img'      => '',
-		'email_header_text'     => __( 'Hello', 'rcp' )
+			'currency_position'     => 'before',
+			'currency'              => 'USD',
+			'registration_page'     => 0,
+			'redirect'              => 0,
+			'redirect_from_premium' => 0,
+			'login_redirect'        => 0,
+			'disable_trial_free_subs' => 0,
+			'email_header_img'      => '',
+			'email_header_text'     => __( 'Hello', 'rcp' ),
+			'stripe_webhooks'      => get_stripe_webhooks(),
 	);
 
 	$rcp_options = wp_parse_args( $rcp_options, $defaults );
 
+	do_action( 'stellarwp/telemetry/restrict-content-pro/optin' );
+	do_action( 'stellarwp/telemetry/restrict-content/optin' );
 	?>
 	<div id="rcp-settings-wrap" class="wrap">
 		<?php
@@ -48,13 +52,20 @@ function rcp_settings_page() {
 			$_REQUEST['updated'] = false;
 		?>
 
-		<h1><?php _e( 'Restrict Content Pro', 'rcp' ); ?></h1>
+		<h1><?php
+			if( defined('IS_PRO') && IS_PRO ) {
+				_e( 'Restrict Content Pro', 'rcp' );
+			}
+			else {
+				_e( 'Restrict Content', 'rcp' );
+			}
+			?></h1>
 
 		<?php if( ! empty( $_GET['rcp_gateway_connect_error'] ) ): ?>
-		<div class="notice error">
-			<p><?php printf( __( 'There was an error processing your gateway connection request. Code: %s. Message: %s. Please <a href="%s">try again</a>.', 'rcp' ), esc_html( urldecode( $_GET['rcp_gateway_connect_error'] ) ), esc_html( urldecode( $_GET['rcp_gateway_connect_error_description'] ) ), esc_url( admin_url( 'admin.php?page=rcp-settings#payments' ) ) ); ?></p>
-		</div>
-		<?php return; endif; ?>
+			<div class="notice error">
+				<p><?php printf( __( 'There was an error processing your gateway connection request. Code: %s. Message: %s. Please <a href="%s">try again</a>.', 'rcp' ), esc_html( urldecode( $_GET['rcp_gateway_connect_error'] ) ), esc_html( urldecode( $_GET['rcp_gateway_connect_error_description'] ) ), esc_url( admin_url( 'admin.php?page=rcp-settings#payments' ) ) ); ?></p>
+			</div>
+			<?php return; endif; ?>
 
 		<h2 class="nav-tab-wrapper">
 			<a href="#general" id="general-tab" class="nav-tab"><?php _e( 'General', 'rcp' ); ?></a>
@@ -62,9 +73,12 @@ function rcp_settings_page() {
 			<a href="#emails" id="emails-tab" class="nav-tab"><?php _e( 'Emails', 'rcp' ); ?></a>
 			<a href="#invoices" id="invoices-tab" class="nav-tab"><?php _e( 'Invoices', 'rcp' ); ?></a>
 			<a href="#misc" id="misc-tab" class="nav-tab"><?php _e( 'Misc', 'rcp' ); ?></a>
+			<?php if ( isset( $_GLOBALS['rcp_requirements_check'] ) && $GLOBALS['rcp_requirements_check']->is_common_initialized ) : ?>
+				<a href="#licenses" id="licenses-tab" class="nav-tab"><?php _e( 'Licenses', 'rcp' ); ?></a>
+			<?php endif; ?>
 		</h2>
 		<?php if ( false !== $_REQUEST['updated'] ) : ?>
-		<div class="updated fade"><p><strong><?php _e( 'Options saved', 'rcp' ); ?></strong></p></div>
+			<div class="updated fade"><p><strong><?php _e( 'Options saved', 'rcp' ); ?></strong></p></div>
 		<?php endif; ?>
 		<form method="post" action="options.php" class="rcp_options_form">
 
@@ -91,7 +105,7 @@ function rcp_settings_page() {
 									<?php
 									if($pages) :
 										foreach ( $pages as $page ) {
-										  	$option = '<option value="' . $page->ID . '" ' . selected($page->ID, $rcp_options['registration_page'], false) . '>';
+											$option = '<option value="' . $page->ID . '" ' . selected($page->ID, $rcp_options['registration_page'], false) . '>';
 											$option .= $page->post_title;
 											$option .= ' (ID: ' . $page->ID . ')';
 											$option .= '</option>';
@@ -118,7 +132,7 @@ function rcp_settings_page() {
 									<?php
 									if($pages) :
 										foreach ( $pages as $page ) {
-										  	$option = '<option value="' . $page->ID . '" ' . selected($page->ID, $rcp_options['redirect'], false) . '>';
+											$option = '<option value="' . $page->ID . '" ' . selected($page->ID, $rcp_options['redirect'], false) . '>';
 											$option .= $page->post_title;
 											$option .= ' (ID: ' . $page->ID . ')';
 											$option .= '</option>';
@@ -146,7 +160,7 @@ function rcp_settings_page() {
 									if($pages) :
 										$rcp_options['account_page'] = isset( $rcp_options['account_page'] ) ? absint( $rcp_options['account_page'] ) : 0;
 										foreach ( $pages as $page ) {
-										  	$option = '<option value="' . $page->ID . '" ' . selected($page->ID, $rcp_options['account_page'], false) . '>';
+											$option = '<option value="' . $page->ID . '" ' . selected($page->ID, $rcp_options['account_page'], false) . '>';
 											$option .= $page->post_title;
 											$option .= ' (ID: ' . $page->ID . ')';
 											$option .= '</option>';
@@ -174,7 +188,7 @@ function rcp_settings_page() {
 									if($pages) :
 										$rcp_options['edit_profile'] = isset( $rcp_options['edit_profile'] ) ? absint( $rcp_options['edit_profile'] ) : 0;
 										foreach ( $pages as $page ) {
-										  	$option = '<option value="' . $page->ID . '" ' . selected($page->ID, $rcp_options['edit_profile'], false) . '>';
+											$option = '<option value="' . $page->ID . '" ' . selected($page->ID, $rcp_options['edit_profile'], false) . '>';
 											$option .= $page->post_title;
 											$option .= ' (ID: ' . $page->ID . ')';
 											$option .= '</option>';
@@ -202,7 +216,7 @@ function rcp_settings_page() {
 									if($pages) :
 										$rcp_options['update_card'] = isset( $rcp_options['update_card'] ) ? absint( $rcp_options['update_card'] ) : 0;
 										foreach ( $pages as $page ) {
-										  	$option = '<option value="' . $page->ID . '" ' . selected($page->ID, $rcp_options['update_card'], false) . '>';
+											$option = '<option value="' . $page->ID . '" ' . selected($page->ID, $rcp_options['update_card'], false) . '>';
 											$option .= $page->post_title;
 											$option .= ' (ID: ' . $page->ID . ')';
 											$option .= '</option>';
@@ -404,6 +418,32 @@ function rcp_settings_page() {
 										<input class="stripe_settings__descriptor" type="text" id="rcp_settings[statement_descriptor_suffix]" name="rcp_settings[statement_descriptor_suffix]" value="<?php if( isset( $rcp_options['statement_descriptor_suffix'] ) ) echo $rcp_options['statement_descriptor_suffix']; ?>" />
 										<p class="description"><?php _e( 'This allows you to add a suffix to your statement descriptor. <strong>Note:</strong> The suffix will override the Statement descriptor.', 'rcp' ); ?></p>
 										<div class="rcp__notification--inline"><?php _e( '<strong>Note:</strong> The suffix will override the Statement descriptor.', 'rcp' ); ?></div>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<label for="rcp_settings[stripe_webhooks]"><?php _e( 'Stripe Webhooks', 'rcp' ); ?></label>
+									</th>
+									<td>
+										<?php
+										$stripe_webhooks = $rcp_options[ 'stripe_webhooks' ] ?? [];
+										$webhooks_str = '';
+										if ( isset( $rcp_options['stripe_webhooks'] ) ) {
+											$size = count( $stripe_webhooks );
+											for ( $i = 0; $i < $size; $i++ ) {
+												if( $i === $size-1 ) {
+													// We don't need a new line in the last item.
+													$webhooks_str .= $stripe_webhooks[ $i ];
+												}
+												else{
+													$webhooks_str .= $stripe_webhooks[ $i ] . "\r\n";
+												}
+											}
+										}
+
+										?>
+										<textarea name="rcp_settings[stripe_webhooks]" id="stripe_webhooks" cols="100" rows="8"><?php echo esc_attr( $webhooks_str ); ?></textarea>
+										<p class="description"><?php _e( 'Here you can add any missing webhook that is not registered in RCP.', 'rcp' ); ?></p>
 									</td>
 								</tr>
 								<tr class="rcp-settings-gateway-stripe-key-row">
@@ -806,7 +846,7 @@ function rcp_settings_page() {
 							 */
 							do_action( 'rcp_emails_tab_after_renewal_payment_failed_email_admin' );
 
-							 ?>
+							?>
 
 							<?php
 
@@ -948,7 +988,7 @@ function rcp_settings_page() {
 									<?php
 									if($pages) :
 										foreach ( $pages as $page ) {
-										  	$option = '<option value="' . $page->ID . '" ' . selected($page->ID, $rcp_options['redirect_from_premium'], false) . '>';
+											$option = '<option value="' . $page->ID . '" ' . selected($page->ID, $rcp_options['redirect_from_premium'], false) . '>';
 											$option .= $page->post_title;
 											$option .= '</option>';
 											echo $option;
@@ -983,7 +1023,7 @@ function rcp_settings_page() {
 									<?php
 									if($pages) :
 										foreach ( $pages as $page ) {
-										  	$option = '<option value="' . $page->ID . '" ' . selected($page->ID, $rcp_options['login_redirect'], false) . '>';
+											$option = '<option value="' . $page->ID . '" ' . selected($page->ID, $rcp_options['login_redirect'], false) . '>';
 											$option .= $page->post_title;
 											$option .= '</option>';
 											echo $option;
@@ -1045,7 +1085,7 @@ function rcp_settings_page() {
 						/**
 						 * Action to add Discount Signup Fees
 						 */
-						do_action('rcp_after_content_excerpts_admin');
+						do_action('rcp_after_content_excerpts_admin', $rcp_options);
 
 						?>
 
@@ -1130,10 +1170,63 @@ function rcp_settings_page() {
 							<td>
 						</tr>
 
+						<tr valign="top" class="rcp-settings-recaptcha-group">
+							<th>
+								<label for="rcp_settings[enable_recaptcha]"><?php _e( 'Enable reCAPTCHA', 'rcp' ); ?></label>
+							</th>
+							<td>
+								<input type="checkbox" value="1" name="rcp_settings[enable_recaptcha]"
+									   id="rcp_settings[enable_recaptcha]" <?php checked( ! empty( $rcp_options['enable_recaptcha'] ) ); ?>/>
+								<span class="description"><?php _e( 'Check this to enable reCAPTCHA on the registration form.', 'rcp' ); ?></span>
+							</td>
+						</tr>
+						<tr valign="top" class="rcp-settings-recaptcha-group">
+							<th>
+								<label for="rcp_settings[recaptcha_version]"><?php _e( 'reCAPTCHA Version', 'rcp' ); ?></label>
+							</th>
+							<td>
+								<select id="rcp_settings[recaptcha_version]" name="rcp_settings[recaptcha_version]">
+									<option value="2" <?php selected( '2', rcp_get_recaptcha_version() ); ?>><?php _e( 'reCAPTCHA v2', 'rcp' ); ?></option>
+									<option value="3" <?php selected( '3', rcp_get_recaptcha_version() ); ?>><?php _e( 'reCAPTCHA v3', 'rcp' ); ?></option>
+								</select>
+								<span class="description"><?php _e( 'Select the reCAPTCHA version that corresponds to your site key.', 'rcp' ); ?></span>
+							</td>
+						</tr>
+						<tr valign="top" class="rcp-settings-recaptcha-group">
+							<th>
+								<label for="rcp_settings[recaptcha_public_key]"><?php _e( 'reCAPTCHA Site Key', 'rcp' ); ?></label>
+							</th>
+							<td>
+								<input type="text" id="rcp_settings[recaptcha_public_key]" style="width: 300px;"
+									   name="rcp_settings[recaptcha_public_key]"
+									   value="<?php if ( isset( $rcp_options['recaptcha_public_key'] ) ) {
+										   echo $rcp_options['recaptcha_public_key'];
+									   } ?>"/>
+								<p class="description"><?php _e( 'This your own personal reCAPTCHA Site key. Go to', 'rcp' ); ?> <a
+											href="https://www.google.com/recaptcha/"><?php _e( 'your account', 'rcp' ); ?></a>, <?php _e( 'then click on your domain (or add a new one) to find your site key.', 'rcp' ); ?>
+								</p>
+							<td>
+						</tr>
+						<tr valign="top" class="rcp-settings-recaptcha-group">
+							<th>
+								<label for="rcp_settings[recaptcha_private_key]"><?php _e( 'reCAPTCHA Secret Key', 'rcp' ); ?></label>
+							</th>
+							<td>
+								<input type="text" id="rcp_settings[recaptcha_private_key]" style="width: 300px;"
+									   name="rcp_settings[recaptcha_private_key]"
+									   value="<?php if ( isset( $rcp_options['recaptcha_private_key'] ) ) {
+										   echo $rcp_options['recaptcha_private_key'];
+									   } ?>"/>
+								<p class="description"><?php _e( 'This your own personal reCAPTCHA Secret key. Go to', 'rcp' ); ?> <a
+											href="https://www.google.com/recaptcha/"><?php _e( 'your account', 'rcp' ); ?></a>, <?php _e( 'then click on your domain (or add a new one) to find your secret key.', 'rcp' ); ?>
+								</p>
+							</td>
+						</tr>
+
 						<?
 						/**
-						* Action to add the maximum number of simultaneous connections per member
-						*/
+						 * Action to add the maximum number of simultaneous connections per member
+						 */
 						do_action( 'rcp_settings_after_privacy_policy_link', $rcp_options );
 						?>
 
@@ -1164,10 +1257,65 @@ function rcp_settings_page() {
 								<span class="description"><?php _e( 'Check this box if you would like to enable Free subscriptions switching.', 'rcp' ); ?></span>
 							</td>
 						</tr>
+						<tr valign="top">
+							<th>
+								<label for="telemetry-active"><?php _e( 'Telemetry "Opt In" / "Opt Out"', 'rcp' ); ?></label>
+							</th>
+							<td>
+								<?php
+								$container = Telemetry::instance()->container();
+								$opt_in_status_value = $container->get( Status::class )->get();
+								?>
+								<label for="active"><input type="radio" value="1" name="opt-in-status-settings" id="telemetry-active" <?php checked( '1', $opt_in_status_value ); ?>/>Active</label><br/>
+								<label for="inactive"><input type="radio" value="0" name="opt-in-status-settings" id="telemetry-inactive" <?php checked( '2', $opt_in_status_value ); ?>/>Inactive</label><br/>
+								<label for="mixed"><input type="radio" value="3" name="opt-in-status-settings" id="telemetry-mixed" <?php checked( '3', $opt_in_status_value ); ?> disabled/>
+									Mixed - At least one plugin implementing Telemetry does not have an active opt-in status.</label>
+								<input type="hidden" name="opt-in-src" value="rcp_settings">
+							</td>
+						</tr>
 					</table>
 					<?php do_action( 'rcp_misc_settings', $rcp_options ); ?>
 				</div><!--end #misc-->
 
+				<?php if ( isset( $_GLOBALS['rcp_requirements_check'] ) && $GLOBALS['rcp_requirements_check']->is_common_initialized ) : ?>
+					<div class="tab_content" id="licenses">
+						<table class="form-table">
+							<tr valign="top">
+								<th>
+									<label for=""><?php _e( 'Restrict Content Pro', 'rcp' ); ?></label>
+								</th>
+								<td>
+									<?php
+									/**
+									 * @var $licenses_tab
+									 */
+									include Tribe__Main::instance()->plugin_path . 'src/admin-views/tribe-options-licenses.php';
+
+									/**
+									 * Allows the fields displayed in the licenses tab to be modified.
+									 *
+									 * @var array
+									 */
+									$license_fields = apply_filters( 'tribe_license_fields', $licenses_tab );
+									$key = get_option( 'pue_install_key_restrict_content_pro' );
+									if ( empty( $key ) ) {
+										$key = \RCP\PUE\Helper::DATA;
+									}
+
+									new Tribe__Field( 'pue_install_key_restrict_content_pro', $license_fields['pue_install_key_restrict_content_pro'], $key );
+
+									$pue_checker = new Tribe__PUE__Checker( 'https://pue.theeventscalendar.com/', 'restrict-content-pro', [
+											'context'     => 'plugin',
+											'plugin_name' => __( 'Restrict Content Pro', 'tribe-common' ),
+									] );
+									$pue_checker->do_license_key_javascript();
+									?>
+								</td>
+							</tr>
+						</table>
+						<?php do_action( 'rcp_licenses_settings', $rcp_options ); ?>
+					</div><!--end #licenses-->
+				<?php endif; ?>
 			</div><!--end #tab_container-->
 
 			<!-- save the options -->
@@ -1192,10 +1340,10 @@ function rcp_sanitize_settings( $data ) {
 
 	// Trim API key fields.
 	$api_key_fields = array(
-		'stripe_test_secret', 'stripe_test_publishable',
-		'stripe_live_secret', 'stripe_live_publishable',
-		'twocheckout_test_private', 'twocheckout_test_publishable',
-		'twocheckout_live_private', 'twocheckout_live_publishable'
+			'stripe_test_secret', 'stripe_test_publishable',
+			'stripe_live_secret', 'stripe_live_publishable',
+			'twocheckout_test_private', 'twocheckout_test_publishable',
+			'twocheckout_live_private', 'twocheckout_live_publishable'
 	);
 
 	foreach ( $api_key_fields as $field ) {
@@ -1217,11 +1365,11 @@ function rcp_sanitize_settings( $data ) {
 		}
 
 		if(
-			// Check for various login form short codes
-			false === strpos( $page->post_content, '[login_form' ) &&
-			false === strpos( $page->post_content, '[edd_login' ) &&
-			false === strpos( $page->post_content, '[subscription_details' ) &&
-			false === strpos( $page->post_content, '[login' )
+				// Check for various login form short codes
+				false === strpos( $page->post_content, '[login_form' ) &&
+				false === strpos( $page->post_content, '[edd_login' ) &&
+				false === strpos( $page->post_content, '[subscription_details' ) &&
+				false === strpos( $page->post_content, '[login' )
 		) {
 			unset( $data['hijack_login_url'] );
 			set_transient( 'rcp_login_redirect_invalid', 1, MINUTE_IN_SECONDS );
@@ -1235,6 +1383,75 @@ function rcp_sanitize_settings( $data ) {
 		if ( ! empty( $data[$email_body] ) ) {
 			$data[$email_body] = wp_kses_post( $data[$email_body] );
 		}
+	}
+
+	if ( class_exists( \RCP\PUE\PUE::class  ) && \RCP\PUE\PUE::has_embedded_license() ) {
+		$key         = null;
+		$pue_checker = new Tribe__PUE__Checker( 'https://pue.theeventscalendar.com/', 'restrict-content-pro', [
+				'context'     => 'plugin',
+				'plugin_name' => __( 'Restrict Content Pro', 'tribe-common' ),
+		] );
+		if ( ! empty( $_POST['pue_install_key_restrict_content_pro'] ) ) {
+			$key = sanitize_text_field( $_POST['pue_install_key_restrict_content_pro'] );
+			update_option( 'pue_install_key_restrict_content_pro', $key );
+		} else {
+			delete_option( 'pue_install_key_restrict_content_pro' );
+		}
+
+		$pue_checker->check_for_updates( [], true );
+
+		$query_args = $pue_checker->get_validate_query();
+
+		$query_args['key'] = sanitize_text_field( $key );
+
+		$pue_checker->license_key_status( $query_args );
+	}
+
+	// Sanitize Stripe Webhooks
+	if( isset( $data['stripe_webhooks'] ) ) {
+		// If we have the settings in place that means that we don't need to parse the textarea field.
+		if( ! is_array( $data['stripe_webhooks'] ) ) {
+			$webhooks = str_replace( "\r", '', $data['stripe_webhooks'] ); // Remove carriage return.
+			$new_webhooks = [];
+			// Extract and sanitize the values.
+			$webhooks_sanitized = array_map( function($item ) {
+				return sanitize_text_field( $item );
+			}
+					, explode("\n", $webhooks )
+			);
+		}
+		else {
+			$new_webhooks = [];
+			// Extract and sanitize the values.
+			$webhooks_sanitized = array_map( function($item ) {
+				return sanitize_text_field( $item );
+			},
+				$data['stripe_webhooks']
+			);
+		}
+
+		// Remove empty fields.
+		$size = count( $webhooks_sanitized );
+		for ($i = 0; $i < $size; $i ++) {
+			if( empty( $webhooks_sanitized[ $i ] ) ) {
+				unset( $webhooks_sanitized[ $i ]  );
+			}
+			elseif ( false === validate_stripe_webhook( $webhooks_sanitized[ $i ], true ) ) {
+				rcp_log( 'Invalid Stripe webhook. "'. $webhooks_sanitized[ $i ] . '" was provided in "RCP Settings > Payments > Stripe Webhooks"' );
+			}
+			elseif ( false === in_array( $webhooks_sanitized[ $i ], $new_webhooks ) ) { // Check for existing value.
+				$new_webhooks[] = $webhooks_sanitized[ $i ];
+			}
+		}
+
+		$data['stripe_webhooks'] = $new_webhooks;
+	}
+
+	if( ! defined('IS_PRO') ) {
+		// We need to set the default templates for Free. See RC-141.
+		$default_templates = rcp_create_default_email_templates();
+		$default_templates['email_verification'] = 'all';
+		$data = array_merge( $data, $default_templates);
 	}
 
 	do_action( 'rcp_save_settings', $data );
@@ -1460,9 +1677,9 @@ function rcp_process_gateway_connect_completion() {
 	}
 
 	$rcp_credentials_url = add_query_arg( array(
-		'live_mode'         => urlencode( (int) ! rcp_is_sandbox() ),
-		'state'             => urlencode( sanitize_text_field( $_GET['state'] ) ),
-		'customer_site_url' => urlencode( admin_url( 'admin.php?page=rcp-settings' ) ),
+			'live_mode'         => urlencode( (int) ! rcp_is_sandbox() ),
+			'state'             => urlencode( sanitize_text_field( $_GET['state'] ) ),
+			'customer_site_url' => urlencode( admin_url( 'admin.php?page=rcp-settings' ) ),
 	), 'https://restrictcontentpro.com/?rcp_gateway_connect_credentials=stripe_connect' );
 
 	$response = wp_remote_get( esc_url_raw( $rcp_credentials_url ) );
